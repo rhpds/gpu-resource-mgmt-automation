@@ -1,0 +1,25 @@
+---
+# App of Apps pattern — this Application tells ArgoCD to manage
+# the manifests under workloads/example-workload/.
+# To add a new app: copy this file, update name/path, and add it
+# to bootstrap/kustomization.yaml.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: example-workload
+  namespace: openshift-gitops
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/rhpds/gpu-resource-mgmt-automation
+    targetRevision: main
+    path: workloads/example-workload
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: example-workload
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true

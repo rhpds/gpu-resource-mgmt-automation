@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-gpu
+  namespace: example-workload
+  labels:
+    app: hello-gpu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-gpu
+  template:
+    metadata:
+      labels:
+        app: hello-gpu
+    spec:
+      containers:
+      - name: hello-gpu
+        image: registry.access.redhat.com/ubi9/ubi-minimal:9.4
+        command: ["/bin/sh", "-c", "while true; do echo 'GPUaaS with Kueue - example workload running'; sleep 30; done"]
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+          limits:
+            cpu: "100m"
+            memory: "128Mi"
