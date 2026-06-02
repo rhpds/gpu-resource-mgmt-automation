@@ -64,3 +64,4 @@ GitOps repository for **GPUaaS using Kueue with Fake GPUs** — managed by Argo 
    ```
 
 4. Commit and push — Argo CD picks it up automatically.
+
