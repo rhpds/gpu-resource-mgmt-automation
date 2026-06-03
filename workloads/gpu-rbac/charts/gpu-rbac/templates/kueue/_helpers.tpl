@@ -3,6 +3,9 @@ apiVersion: kueue.x-k8s.io/v1beta1
 kind: Cohort
 metadata:
   name: {{ .name }}
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   resourceGroups:
     {{- range .resourceGroups }}
@@ -33,6 +36,9 @@ metadata:
   labels:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   {{- with .cohort }}
   cohort: {{ . }}
