@@ -20,11 +20,3 @@ helmCharts:
     releaseName: olm-v0-chart
     valuesFile: values-v0.yaml
 
-patches:
-  - target:
-      kind: Subscription
-      name: rhods-operator
-    patch: |-
-      - op: replace
-        path: /spec/source
-        value: rhoai-catalog-nightly
