@@ -3,7 +3,7 @@ environment:
   openshift: true
 
 topologyConfigMap:
-  enabled: false
+  enabled: true
 
 topology:
   # nodePools is a map of node pool name to node pool configuration.
