@@ -4,8 +4,6 @@ resources:
   - dsci-cr.yaml
   - odh-dashboard.yaml
   - hardware-profile.yaml
-  - odh-document.yaml
-  - mlflow.yaml
   - authorino-cr.yaml
   - job-set-cr.yaml
   - kuadrant-cr.yaml
