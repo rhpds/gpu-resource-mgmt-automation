@@ -63,6 +63,7 @@ clusterRoles:
         resources:
           - clusterqueues
           - localqueues
+          - topologies
         verbs:
           - get
           - list
@@ -72,6 +73,7 @@ clusterRoles:
         resources:
           - clusterqueues/status
           - localqueues/status
+          - topologies/status
         verbs:
           - get
 
