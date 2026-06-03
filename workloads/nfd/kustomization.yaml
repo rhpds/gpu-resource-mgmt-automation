@@ -1,0 +1,9 @@
+---
+helmGlobals:
+  chartHome: charts
+
+helmCharts:
+  - name: nfd
+    includeCRDs: false
+    releaseName: nfd
+    valuesFile: charts/nfd/values.yaml

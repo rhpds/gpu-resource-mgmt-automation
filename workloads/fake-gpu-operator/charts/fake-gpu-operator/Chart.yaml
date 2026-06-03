@@ -1,0 +1,7 @@
+---
+apiVersion: v2
+appVersion: 0.0.80
+description: A Helm chart for Kubernetes
+name: fake-gpu-operator
+type: application
+version: 0.0.80

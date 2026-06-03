@@ -1,0 +1,12 @@
+---
+resources:
+  - namespace.yaml
+
+helmGlobals:
+  chartHome: charts
+
+helmCharts:
+  - name: gpu-config-plugin
+    includeCRDs: false
+    releaseName: gpu-config-plugin
+    namespace: gpu-config-plugin

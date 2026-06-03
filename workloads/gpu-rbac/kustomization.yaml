@@ -1,0 +1,9 @@
+---
+helmGlobals:
+  chartHome: charts
+
+helmCharts:
+  - name: gpu-rbac
+    includeCRDs: false
+    releaseName: gpu-rbac
+    valuesFile: charts/gpu-rbac/values.yaml

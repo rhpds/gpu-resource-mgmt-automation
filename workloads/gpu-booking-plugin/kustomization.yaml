@@ -1,0 +1,22 @@
+---
+resources:
+  - namespace.yaml
+
+helmGlobals:
+  chartHome: charts
+
+helmCharts:
+  - name: gpu-booking-plugin
+    includeCRDs: false
+    releaseName: gpu-booking-plugin
+    namespace: gpu-booking-app-plugin
+    valuesFile: values-gpu-booking-plugin.yaml
+
+patches:
+  - target:
+      kind: ServiceAccount
+      name: gpu-booking-plugin
+    patch: |-
+      - op: add
+        path: /metadata/namespace
+        value: gpu-booking-app-plugin

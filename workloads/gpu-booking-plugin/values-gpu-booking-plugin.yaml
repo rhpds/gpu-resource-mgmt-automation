@@ -1,0 +1,7 @@
+---
+image:
+  tag: dynamic
+
+gpuDiscovery:
+  enabled: true
+  intervalSeconds: 300

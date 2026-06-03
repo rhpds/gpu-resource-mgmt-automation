@@ -1,0 +1,15 @@
+---
+{{- if and .Values.statusUpdater.enabled .Values.statusUpdater.podPatchRbac.enabled -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: fake-status-updater-pod-patch
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - patch
+      - update
+{{- end -}}

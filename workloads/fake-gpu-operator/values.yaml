@@ -1,0 +1,51 @@
+---
+environment:
+  openshift: true
+
+topologyConfigMap:
+  enabled: false
+
+topology:
+  # nodePools is a map of node pool name to node pool configuration.
+  # Nodes are assigned to node pools based on the node pool label's value (key is configurable via nodePoolLabelKey).
+  # 
+  # For example, nodes that have the label "run.ai/simulated-gpu-node-pool: default"
+  # will be assigned to the "default" node pool.
+  nodePools:
+    default:
+      gpuProduct: NVIDIA-L40S
+      gpuCount: 8
+      gpuMemory: 49152
+  nodePoolLabelKey: run.ai/simulated-gpu-node-pool
+  migStrategy: none
+
+kwokGpuDevicePlugin:
+  enabled: false
+
+devicePlugin:
+  image:
+    repository: quay.io/eformat/fake-gpu-operator-device-plugin
+    tag: latest
+
+migFaker:
+  enabled: false # we only need this when using run.ai scheduler
+  image:
+    repository: quay.io/eformat/fake-gpu-operator-mig-faker
+    tag: latest
+
+statusUpdater:
+  image:
+    repository: quay.io/eformat/fake-gpu-operator-status-updater
+    tag: latest
+
+statusExporter:
+  enabled: true
+  image:
+    repository: quay.io/eformat/fake-gpu-operator-status-exporter
+    tag: latest
+
+topologyServer:
+  image:
+    repository: quay.io/eformat/fake-gpu-operator-topology-server
+    tag: latest
+
