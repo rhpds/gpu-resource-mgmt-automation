@@ -1,3 +1,30 @@
 ---
 resources:
-- rhoai.yaml
+  - dsc-cr.yaml
+  - dsci-cr.yaml
+  - odh-dashboard.yaml
+  - hardware-profile.yaml
+  - odh-document.yaml
+  - mlflow.yaml
+  - authorino-cr.yaml
+  - job-set-cr.yaml
+  - kuadrant-cr.yaml
+  - leader-worker-set.yaml
+
+helmGlobals:
+  chartHome: charts
+
+helmCharts:
+  - name: olm-v0-chart
+    includeCRDs: true
+    releaseName: olm-v0-chart
+    valuesFile: values-v0.yaml
+
+patches:
+  - target:
+      kind: Subscription
+      name: rhods-operator
+    patch: |-
+      - op: replace
+        path: /spec/source
+        value: rhoai-catalog-nightly
