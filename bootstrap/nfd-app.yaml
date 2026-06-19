@@ -10,7 +10,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/rhpds/gpu-resource-mgmt-automation
-    targetRevision: main
+    targetRevision: gb300
     path: workloads/nfd
   destination:
     server: https://kubernetes.default.svc
