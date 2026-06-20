@@ -1,6 +1,6 @@
 ---
 image:
-  tag: dynamic
+  tag: latest
 
 gpuDiscovery:
   enabled: true

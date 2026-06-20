@@ -11,19 +11,19 @@ gpuConfig:
       count: 8
       share: 0.0625
       gpuEquivalent: 1.0
-    - name: "MIG 3g.71gb"
-      type: "nvidia.com/mig-3g.71gb"
-      count: 8
+    - name: "MIG 3g.93gb"
+      type: "nvidia.com/mig-3g.93gb"
+      count: 16
       share: 0.03125
       gpuEquivalent: 0.5
-    - name: "MIG 2g.35gb"
-      type: "nvidia.com/mig-2g.35gb"
-      count: 8
+    - name: "MIG 2g.47gb"
+      type: "nvidia.com/mig-2g.47gb"
+      count: 16
       share: 0.015625
       gpuEquivalent: 0.25
-    - name: "MIG 1g.18gb"
-      type: "nvidia.com/mig-1g.18gb"
-      count: 16
+    - name: "MIG 1g.23gb"
+      type: "nvidia.com/mig-1g.23gb"
+      count: 56
       share: 0.0078125
       gpuEquivalent: 0.125
   totalCpu: 316
@@ -36,14 +36,14 @@ totalResources:
     nvidia.com/gpu:
       count: 8
       share: 0.0625
-    nvidia.com/mig-3g.71gb:
-      count: 8
-      share: 0.03125
-    nvidia.com/mig-2g.35gb:
-      count: 8
-      share: 0.015625
-    nvidia.com/mig-1g.18gb:
+    nvidia.com/mig-3g.93gb:
       count: 16
+      share: 0.03125
+    nvidia.com/mig-2g.47gb:
+      count: 16
+      share: 0.015625
+    nvidia.com/mig-1g.23gb:
+      count: 56
       share: 0.0078125
 
 
@@ -143,56 +143,56 @@ hardwareProfiles:
     cpu: 4
     mem: 18Gi
   unreserved-gpu:
-    displayName: H200 GPU (Unreserved)
+    displayName: GB300 GPU (Unreserved)
     description: >-
-      This profile offers access to an entire H200 from GPU workers, drawing
+      This profile offers access to an entire GB300 from GPU workers, drawing
       from the unreserved pool of resources (limited availability and first
       come, first served)
     cpu: 28
     mem: 110Gi
     gpu:
       identifier: nvidia.com/gpu
-      displayName: H200 GPU
+      displayName: GB300 GPU
       max: 32
     localQueue: unreserved
-  unreserved-mig-71gb:
-    displayName: 71GB Slice (Unreserved)
+  unreserved-mig-93gb:
+    displayName: 93GB Slice (Unreserved)
     description: >-
-      This profile offers access to an 71GB MIG slice from GPU workers, drawing
+      This profile offers access to a 93GB MIG slice from GPU workers, drawing
       from the unreserved pool of resources (limited availability and first
       come, first served)
     cpu: 14
-    mem: 71Gi
+    mem: 93Gi
     gpu:
-      identifier: nvidia.com/mig-3g.71gb
-      displayName: 71GB MIG Slice
-      max: 8
+      identifier: nvidia.com/mig-3g.93gb
+      displayName: 93GB MIG Slice
+      max: 16
     localQueue: unreserved
-  unreserved-mig-35gb:
-    displayName: 35GB Slice (Unreserved)
+  unreserved-mig-47gb:
+    displayName: 47GB Slice (Unreserved)
     description: >-
-      This profile offers access to an 35GB MIG slice from GPU workers, drawing
+      This profile offers access to a 47GB MIG slice from GPU workers, drawing
       from the unreserved pool of resources (limited availability and first
       come, first served)
     cpu: 8
-    mem: 35Gi
+    mem: 47Gi
     gpu:
-      identifier: nvidia.com/mig-2g.35gb
-      displayName: 35GB MIG Slice
-      max: 1
+      identifier: nvidia.com/mig-2g.47gb
+      displayName: 47GB MIG Slice
+      max: 16
     localQueue: unreserved
-  unreserved-mig-18gb:
-    displayName: 18GB Slice (Unreserved)
+  unreserved-mig-23gb:
+    displayName: 23GB Slice (Unreserved)
     description: >-
-      This profile offers access to an 18GB MIG slice from GPU workers, drawing
+      This profile offers access to a 23GB MIG slice from GPU workers, drawing
       from the unreserved pool of resources (limited availability and first
       come, first served)
     cpu: 4
-    mem: 18Gi
+    mem: 23Gi
     gpu:
-      identifier: nvidia.com/mig-1g.18gb
-      displayName: 18GB MIG Slice
-      max: 16
+      identifier: nvidia.com/mig-1g.23gb
+      displayName: 23GB MIG Slice
+      max: 56
     localQueue: unreserved
 
 userNamespaces:
