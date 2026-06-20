@@ -25,27 +25,27 @@ kwokGpuDevicePlugin:
 devicePlugin:
   image:
     repository: quay.io/eformat/fake-gpu-operator-device-plugin
-    tag: gb300
+    tag: latest
 
 migFaker:
   enabled: false # we only need this when using run.ai scheduler
   image:
     repository: quay.io/eformat/fake-gpu-operator-mig-faker
-    tag: gb300
+    tag: latest
 
 statusUpdater:
   image:
     repository: quay.io/eformat/fake-gpu-operator-status-updater
-    tag: gb300
+    tag: latest
 
 statusExporter:
   enabled: true
   image:
     repository: quay.io/eformat/fake-gpu-operator-status-exporter
-    tag: gb300
+    tag: latest
 
 topologyServer:
   image:
     repository: quay.io/eformat/fake-gpu-operator-topology-server
-    tag: gb300
+    tag: latest
 

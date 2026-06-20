@@ -10,7 +10,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/rhpds/gpu-resource-mgmt-automation
-    targetRevision: gb300
+    targetRevision: main
     path: workloads/fake-gpu-operator
   destination:
     server: https://kubernetes.default.svc
