@@ -65,6 +65,7 @@ clusterRoles:
           - localqueues
           - topologies
           - workloads
+          - resourceflavors
         verbs:
           - get
           - list
@@ -76,6 +77,7 @@ clusterRoles:
           - localqueues/status
           - topologies/status
           - workloads/status
+          - resourceflavors/status
         verbs:
           - get
 
