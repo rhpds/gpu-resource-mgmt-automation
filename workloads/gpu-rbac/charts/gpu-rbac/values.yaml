@@ -66,6 +66,7 @@ clusterRoles:
           - topologies
           - workloads
           - resourceflavors
+          - workloadpriorityclasses
         verbs:
           - get
           - list
@@ -78,6 +79,7 @@ clusterRoles:
           - topologies/status
           - workloads/status
           - resourceflavors/status
+          - workloadpriorityclasses/status
         verbs:
           - get
 
