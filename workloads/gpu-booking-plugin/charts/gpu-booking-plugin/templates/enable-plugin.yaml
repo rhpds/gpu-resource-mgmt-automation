@@ -49,16 +49,22 @@ spec:
             - /bin/bash
             - -c
             - |
-              oc get consoles.operator.openshift.io cluster -o json | \
-                python3 -c '
-              import json, sys
-              c = json.load(sys.stdin)
-              plugins = c.get("spec", {}).get("plugins", [])
-              name = "{{ .Values.plugin.name }}"
-              if name not in plugins:
-                  plugins.append(name)
-                  print(json.dumps({"spec": {"plugins": plugins}}))
-              else:
-                  sys.exit(0)
-              ' | oc patch consoles.operator.openshift.io cluster --type=merge -p "$(cat -)" || true
+              PLUGIN_NAME="{{ .Values.plugin.name }}"
+              MAX_RETRIES=10
+              for i in $(seq 1 $MAX_RETRIES); do
+                CURRENT=$(oc get consoles.operator.openshift.io cluster -o jsonpath='{.spec.plugins}' 2>/dev/null || echo '[]')
+                if echo "$CURRENT" | grep -q "\"$PLUGIN_NAME\""; then
+                  echo "Plugin $PLUGIN_NAME already enabled"
+                  exit 0
+                fi
+                if oc patch consoles.operator.openshift.io cluster --type=json \
+                  -p="[{\"op\":\"add\",\"path\":\"/spec/plugins/-\",\"value\":\"$PLUGIN_NAME\"}]" 2>/dev/null; then
+                  echo "Plugin $PLUGIN_NAME enabled"
+                  exit 0
+                fi
+                echo "Attempt $i failed (conflict), retrying in 3s..."
+                sleep 3
+              done
+              echo "Failed to enable plugin $PLUGIN_NAME after $MAX_RETRIES attempts"
+              exit 1
 {{- end }}
