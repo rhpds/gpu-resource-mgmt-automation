@@ -48,6 +48,29 @@ totalResources:
 
 
 clusterRoles:
+  - name: workshop-tenant-admin
+    rules:
+      - apiGroups: [""]
+        resources: ["nodes", "namespaces"]
+        verbs: ["get", "list", "watch"]
+      - apiGroups: ["kueue.x-k8s.io"]
+        resources:
+          - cohorts
+          - clusterqueues
+          - clusterqueues/status
+          - localqueues
+          - localqueues/status
+          - workloads
+          - workloads/status
+          - resourceflavors
+          - topologies
+        verbs: ["get", "list", "watch"]
+      - apiGroups: ["infrastructure.opendatahub.io"]
+        resources: ["hardwareprofiles"]
+        verbs: ["get", "list", "watch"]
+      - apiGroups: ["nvidia.com"]
+        resources: ["clusterpolicies"]
+        verbs: ["get", "list", "watch"]
   - name: kueue-cluster-visibility
     rules:
       - apiGroups:
@@ -90,6 +113,12 @@ clusterRoleBindings:
       - users
   - name: gpu-booking-plugin-admin
     clusterRole: gpu-booking-plugin-admin
+    users:
+      - tenanta-admin
+      - tenantb-admin
+      - tenantc-admin
+  - name: workshop-tenant-admin
+    clusterRole: workshop-tenant-admin
     users:
       - tenanta-admin
       - tenantb-admin
