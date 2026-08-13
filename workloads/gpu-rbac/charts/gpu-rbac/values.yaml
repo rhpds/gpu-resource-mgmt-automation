@@ -201,6 +201,7 @@ hardwareProfiles:
       max: 56
     localQueue: unreserved
 
+# userNamespaces is kept for single-tenant backwards compat; use tenantGroups for multi-tenant.
 userNamespaces:
   labels:
     opendatahub.io/dashboard: "true"
@@ -220,6 +221,74 @@ userNamespaces:
     - name: unreserved
       clusterQueue: unreserved
   htpasswdUsers: []
-  users:
-    - user1
-    - user2
+  users: []
+
+# tenantGroups defines multiple isolated tenant namespaces, each with their own prefix.
+# Each entry creates user namespaces, local queues, and role bindings for all users in the group.
+tenantGroups:
+  - name: tenanta
+    prefix: "tenanta-user-"
+    users:
+      - user1
+      - user2
+    htpasswdUsers: []
+    labels:
+      opendatahub.io/dashboard: "true"
+      kueue-managed: "true"
+      kueue.openshift.io/managed: "true"
+      rhai-tmm.dev/owner: "{{ lower .username }}"
+    annotations:
+      openshift.io/display-name: "Tenant A - {{ title .username }}"
+      openshift.io/description: Tenant A namespace for {{ .username }}
+      openshift.io/requester: gitops
+    clusterRoles:
+      - admin
+    localQueues:
+      - name: default
+        clusterQueue: default
+      - name: unreserved
+        clusterQueue: unreserved
+  - name: tenantb
+    prefix: "tenantb-user-"
+    users:
+      - user1
+      - user2
+    htpasswdUsers: []
+    labels:
+      opendatahub.io/dashboard: "true"
+      kueue-managed: "true"
+      kueue.openshift.io/managed: "true"
+      rhai-tmm.dev/owner: "{{ lower .username }}"
+    annotations:
+      openshift.io/display-name: "Tenant B - {{ title .username }}"
+      openshift.io/description: Tenant B namespace for {{ .username }}
+      openshift.io/requester: gitops
+    clusterRoles:
+      - admin
+    localQueues:
+      - name: default
+        clusterQueue: default
+      - name: unreserved
+        clusterQueue: unreserved
+  - name: tenantc
+    prefix: "tenantc-user-"
+    users:
+      - user1
+      - user2
+    htpasswdUsers: []
+    labels:
+      opendatahub.io/dashboard: "true"
+      kueue-managed: "true"
+      kueue.openshift.io/managed: "true"
+      rhai-tmm.dev/owner: "{{ lower .username }}"
+    annotations:
+      openshift.io/display-name: "Tenant C - {{ title .username }}"
+      openshift.io/description: Tenant C namespace for {{ .username }}
+      openshift.io/requester: gitops
+    clusterRoles:
+      - admin
+    localQueues:
+      - name: default
+        clusterQueue: default
+      - name: unreserved
+        clusterQueue: unreserved

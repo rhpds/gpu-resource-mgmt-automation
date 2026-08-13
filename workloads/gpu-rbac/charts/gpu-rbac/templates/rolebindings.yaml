@@ -39,3 +39,23 @@
 ---
 {{ include "rbac.role-binding" $builderRoleBinding }}
 {{- end }}
+{{- range $group := .Values.tenantGroups }}
+{{- range $username := concat $group.users $group.htpasswdUsers }}
+{{- range $clusterRole := $group.clusterRoles }}
+{{- $userRoleBinding := dict }}
+{{- $_ := set $userRoleBinding "name" (printf "%s-%s" $username $clusterRole) }}
+{{- $_ := set $userRoleBinding "namespace" (printf "%s%s" $group.prefix $username) }}
+{{- $_ := set $userRoleBinding "clusterRole" $clusterRole }}
+{{- $_ := set $userRoleBinding "users" (list $username) }}
+---
+{{ include "rbac.role-binding" $userRoleBinding }}
+{{- end }}
+{{- $builderRoleBinding := dict }}
+{{- $_ := set $builderRoleBinding "name" "builder-hostmount-scc" }}
+{{- $_ := set $builderRoleBinding "namespace" (printf "%s%s" $group.prefix $username) }}
+{{- $_ := set $builderRoleBinding "clusterRole" "system:openshift:scc:hostmount-anyuid-v2" }}
+{{- $_ := set $builderRoleBinding "serviceAccounts" (list (dict "name" "builder" "namespace" (printf "%s%s" $group.prefix $username))) }}
+---
+{{ include "rbac.role-binding" $builderRoleBinding }}
+{{- end }}
+{{- end }}

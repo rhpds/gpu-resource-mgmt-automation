@@ -5,3 +5,6 @@ image:
 gpuDiscovery:
   enabled: true
   intervalSeconds: 300
+
+kueue:
+  tenants: "tenanta:tenanta-user-,tenantb:tenantb-user-,tenantc:tenantc-user-"

@@ -1,8 +1,25 @@
 ---
+{{- $allUsers := list }}
+{{- range .Values.userNamespaces.users }}
+{{- $allUsers = append $allUsers . }}
+{{- end }}
+{{- range .Values.userNamespaces.htpasswdUsers }}
+{{- $allUsers = append $allUsers . }}
+{{- end }}
+{{- range .Values.tenantGroups }}
+{{- range .users }}
+{{- $allUsers = append $allUsers . }}
+{{- end }}
+{{- range .htpasswdUsers }}
+{{- $allUsers = append $allUsers . }}
+{{- end }}
+{{- end }}
+{{- $allUsers = $allUsers | uniq }}
 apiVersion: user.openshift.io/v1
 kind: Group
 metadata:
   name: users
 users:
-  - user1
-  - user2
+{{- range $allUsers }}
+  - {{ . }}
+{{- end }}

@@ -20,3 +20,15 @@
 {{ include "kueue.local-queue" $userQueue }}
 {{- end }}
 {{- end }}
+{{- range $group := $.Values.tenantGroups }}
+{{- range $username := concat $group.users $group.htpasswdUsers }}
+{{- range $localQueue := $group.localQueues }}
+{{- $userQueue := dict }}
+{{- $_ := set $userQueue "name" $localQueue.name }}
+{{- $_ := set $userQueue "namespace" (printf "%s%s" $group.prefix $username) }}
+{{- $_ := set $userQueue "clusterQueue" $localQueue.clusterQueue }}
+---
+{{ include "kueue.local-queue" $userQueue }}
+{{- end }}
+{{- end }}
+{{- end }}
