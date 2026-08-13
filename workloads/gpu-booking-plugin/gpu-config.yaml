@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gpu-booking-plugin-gpu-config
+  namespace: gpu-booking-app-plugin
+data:
+  gpu-config.json: |
+    {
+      "resources": [
+        {"count": 8,  "gpuEquivalent": 1,     "name": "GB200 Full GPU", "share": 0.0625,    "type": "nvidia.com/gpu"},
+        {"count": 16, "gpuEquivalent": 0.5,   "name": "MIG 3g.93gb",   "share": 0.03125,   "type": "nvidia.com/mig-3g.93gb"},
+        {"count": 16, "gpuEquivalent": 0.25,  "name": "MIG 2g.47gb",   "share": 0.015625,  "type": "nvidia.com/mig-2g.47gb"},
+        {"count": 56, "gpuEquivalent": 0.125, "name": "MIG 1g.23gb",   "share": 0.0078125, "type": "nvidia.com/mig-1g.23gb"}
+      ],
+      "totalCpu": 316,
+      "totalMemory": 3460
+    }

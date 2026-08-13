@@ -1,6 +1,7 @@
 ---
 resources:
   - namespace.yaml
+  - gpu-config.yaml
 
 helmGlobals:
   chartHome: charts
