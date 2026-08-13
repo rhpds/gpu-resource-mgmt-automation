@@ -69,7 +69,7 @@ clusterRoles:
           - topologies
         verbs: ["get", "list", "watch"]
       - apiGroups: ["infrastructure.opendatahub.io"]
-        resources: ["hardwareprofiles"]
+        resources: ["hardwareprofiles", "hardwareprofiles/status"]
         verbs: ["get", "list", "watch"]
       - apiGroups: ["nvidia.com"]
         resources: ["clusterpolicies"]
