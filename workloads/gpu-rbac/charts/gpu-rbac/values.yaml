@@ -166,15 +166,12 @@ resourceFlavors:
   gb200-tenanta:
     nodeLabels:
       run.ai/simulated-gpu-node-pool: tenanta
-    topologyName: default
   gb200-tenantb:
     nodeLabels:
       run.ai/simulated-gpu-node-pool: tenantb
-    topologyName: default
   gb200-tenantc:
     nodeLabels:
       run.ai/simulated-gpu-node-pool: tenantc
-    topologyName: default
 
 workloadPriorityClasses:
   high-priority:
