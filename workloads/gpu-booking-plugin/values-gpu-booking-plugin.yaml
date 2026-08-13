@@ -3,8 +3,32 @@ image:
   tag: tenant
 
 gpuDiscovery:
-  enabled: true
-  intervalSeconds: 300
+  enabled: false
 
 kueue:
   tenants: "tenanta:tenanta-user-,tenantb:tenantb-user-,tenantc:tenantc-user-"
+
+gpuConfig:
+  resources:
+    - name: "GB200 Full GPU"
+      type: "nvidia.com/gpu"
+      count: 8
+      share: 0.0625
+      gpuEquivalent: 1.0
+    - name: "MIG 3g.93gb"
+      type: "nvidia.com/mig-3g.93gb"
+      count: 16
+      share: 0.03125
+      gpuEquivalent: 0.5
+    - name: "MIG 2g.47gb"
+      type: "nvidia.com/mig-2g.47gb"
+      count: 16
+      share: 0.015625
+      gpuEquivalent: 0.25
+    - name: "MIG 1g.23gb"
+      type: "nvidia.com/mig-1g.23gb"
+      count: 56
+      share: 0.0078125
+      gpuEquivalent: 0.125
+  totalCpu: 316
+  totalMemory: 3460

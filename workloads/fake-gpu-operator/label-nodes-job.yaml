@@ -37,126 +37,17 @@ data:
     version: v1
     mig-configs:
       selected:
-      - devices: ["0"]
+      - devices: ["0","1","2","3","4","5","6","7"]
         mig-enabled: true
         mig-devices:
-          - name: 3g.71gb
-            position: 0
-            size: 4
-          - name: 2g.35gb
-            position: 4
-            size: 2
-          - name: 1g.18gb
-            position: 6
-            size: 1
-          - name: 1g.18gb
-            position: 7
-            size: 1
-      - devices: ["1"]
-        mig-enabled: true
-        mig-devices:
-          - name: 3g.71gb
-            position: 0
-            size: 4
-          - name: 2g.35gb
-            position: 4
-            size: 2
-          - name: 1g.18gb
-            position: 6
-            size: 1
-          - name: 1g.18gb
-            position: 7
-            size: 1
-      - devices: ["2"]
-        mig-enabled: true
-        mig-devices:
-          - name: 3g.71gb
-            position: 0
-            size: 4
-          - name: 2g.35gb
-            position: 4
-            size: 2
-          - name: 1g.18gb
-            position: 6
-            size: 1
-          - name: 1g.18gb
-            position: 7
-            size: 1
-      - devices: ["3"]
-        mig-enabled: true
-        mig-devices:
-          - name: 3g.71gb
-            position: 0
-            size: 4
-          - name: 2g.35gb
-            position: 4
-            size: 2
-          - name: 1g.18gb
-            position: 6
-            size: 1
-          - name: 1g.18gb
-            position: 7
-            size: 1
-      - devices: ["4"]
-        mig-enabled: true
-        mig-devices:
-          - name: 3g.71gb
-            position: 0
-            size: 4
-          - name: 2g.35gb
-            position: 4
-            size: 2
-          - name: 1g.18gb
-            position: 6
-            size: 1
-          - name: 1g.18gb
-            position: 7
-            size: 1
-      - devices: ["5"]
-        mig-enabled: true
-        mig-devices:
-          - name: 3g.71gb
-            position: 0
-            size: 4
-          - name: 2g.35gb
-            position: 4
-            size: 2
-          - name: 1g.18gb
-            position: 6
-            size: 1
-          - name: 1g.18gb
-            position: 7
-            size: 1
-      - devices: ["6"]
-        mig-enabled: true
-        mig-devices:
-          - name: 3g.71gb
-            position: 0
-            size: 4
-          - name: 2g.35gb
-            position: 4
-            size: 2
-          - name: 1g.18gb
-            position: 6
-            size: 1
-          - name: 1g.18gb
-            position: 7
-            size: 1
-      - devices: ["7"]
-        mig-enabled: true
-        mig-devices:
-          - name: 3g.71gb
-            position: 0
-            size: 4
-          - name: 2g.35gb
-            position: 4
-            size: 2
-          - name: 1g.18gb
-            position: 6
-            size: 1
-          - name: 1g.18gb
-            position: 7
-            size: 1
+          - name: 1g.23gb
+            count: 7
+          - name: 2g.47gb
+            count: 2
+          - name: 3g.93gb
+            count: 2
+          - name: 7g.189gb
+            count: 1
 ---
 apiVersion: batch/v1
 kind: Job
@@ -184,9 +75,13 @@ spec:
             - -c
             - |
               MIG_CONFIG=$(cat /config/mig.config)
+              POOLS=(tenanta tenantb tenantc)
+              IDX=0
               for node in $(oc get nodes -l node-role.kubernetes.io/worker --no-headers -o name); do
-                echo "Labeling $node"
-                oc label "$node" run.ai/simulated-gpu-node-pool=default --overwrite
+                POOL=${POOLS[$((IDX % 3))]}
+                echo "Labeling $node -> pool: $POOL"
+                oc label "$node" run.ai/simulated-gpu-node-pool="$POOL" --overwrite
                 oc label "$node" node-role.kubernetes.io/runai-dynamic-mig=true --overwrite
                 oc annotate "$node" "run.ai/mig.config=${MIG_CONFIG}" --overwrite
+                IDX=$((IDX + 1))
               done

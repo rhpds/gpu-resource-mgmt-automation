@@ -8,16 +8,24 @@ topologyConfigMap:
 topology:
   # nodePools is a map of node pool name to node pool configuration.
   # Nodes are assigned to node pools based on the node pool label's value (key is configurable via nodePoolLabelKey).
-  # 
-  # For example, nodes that have the label "run.ai/simulated-gpu-node-pool: default"
-  # will be assigned to the "default" node pool.
+  #
+  # 3x NVIDIA GB200 NVL nodes — one per tenant (tenanta, tenantb, tenantc).
+  # gpuMemory is in MiB: 192 GiB = 196608 MiB
   nodePools:
-    default:
-      gpuProduct: NVIDIA-L40S
+    tenanta:
+      gpuProduct: NVIDIA-GB200-NVL
       gpuCount: 8
-      gpuMemory: 49152
+      gpuMemory: 196608
+    tenantb:
+      gpuProduct: NVIDIA-GB200-NVL
+      gpuCount: 8
+      gpuMemory: 196608
+    tenantc:
+      gpuProduct: NVIDIA-GB200-NVL
+      gpuCount: 8
+      gpuMemory: 196608
   nodePoolLabelKey: run.ai/simulated-gpu-node-pool
-  migStrategy: none
+  migStrategy: mixed
 
 kwokGpuDevicePlugin:
   enabled: false

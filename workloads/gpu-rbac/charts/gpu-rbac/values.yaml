@@ -125,14 +125,17 @@ topologies:
 
 resourceFlavors:
   default-flavor: {}
-  h200:
+  gb200-tenanta:
     nodeLabels:
-      node.kubernetes.io/instance-type: m7i.8xlarge
-    tolerations:
-      - key: nvidia.com/gpu
-        effect: NoSchedule
-        operator: Equal
-        value: h200
+      run.ai/simulated-gpu-node-pool: tenanta
+    topologyName: default
+  gb200-tenantb:
+    nodeLabels:
+      run.ai/simulated-gpu-node-pool: tenantb
+    topologyName: default
+  gb200-tenantc:
+    nodeLabels:
+      run.ai/simulated-gpu-node-pool: tenantc
     topologyName: default
 
 workloadPriorityClasses:
