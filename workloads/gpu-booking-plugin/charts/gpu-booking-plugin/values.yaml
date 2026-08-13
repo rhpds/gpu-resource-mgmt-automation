@@ -43,6 +43,7 @@ kueue:
   syncEnabled: true
   syncIntervalSeconds: 30
   syncDays: 7
+  tenants: ""
 
 bookingWindowDays: 30
 
