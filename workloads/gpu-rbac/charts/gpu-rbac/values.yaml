@@ -155,11 +155,7 @@ clusterQueues:
 
 cohorts: {}
 
-topologies:
-  default:
-    levels:
-      - nodeLabel: topology.kubernetes.io/zone
-      - nodeLabel: kubernetes.io/hostname
+topologies: {}
 
 resourceFlavors:
   default-flavor: {}
