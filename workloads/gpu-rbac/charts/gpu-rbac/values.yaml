@@ -88,6 +88,12 @@ clusterRoleBindings:
     clusterRole: kueue-cluster-visibility
     groups:
       - users
+  - name: gpu-booking-plugin-admin
+    clusterRole: gpu-booking-plugin-admin
+    users:
+      - tenanta-admin
+      - tenantb-admin
+      - tenantc-admin
 
 namespaces:
   - name: maas
@@ -232,8 +238,8 @@ tenantGroups:
   - name: tenanta
     prefix: "tenanta-user-"
     users:
-      - user1
-      - user2
+      - tenanta-user1
+      - tenanta-user2
     htpasswdUsers: []
     labels:
       opendatahub.io/dashboard: "true"
@@ -254,8 +260,8 @@ tenantGroups:
   - name: tenantb
     prefix: "tenantb-user-"
     users:
-      - user1
-      - user2
+      - tenantb-user1
+      - tenantb-user2
     htpasswdUsers: []
     labels:
       opendatahub.io/dashboard: "true"
@@ -276,8 +282,8 @@ tenantGroups:
   - name: tenantc
     prefix: "tenantc-user-"
     users:
-      - user1
-      - user2
+      - tenantc-user1
+      - tenantc-user2
     htpasswdUsers: []
     labels:
       opendatahub.io/dashboard: "true"
