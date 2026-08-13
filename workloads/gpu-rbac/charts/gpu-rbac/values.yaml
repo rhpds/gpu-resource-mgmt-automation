@@ -281,7 +281,7 @@ tenantGroups:
       - name: default
         clusterQueue: default
       - name: unreserved
-        clusterQueue: tenanta-unreserved
+        clusterQueue: unreserved
   - name: tenantb
     prefix: ""
     users:
@@ -303,7 +303,7 @@ tenantGroups:
       - name: default
         clusterQueue: default
       - name: unreserved
-        clusterQueue: tenantb-unreserved
+        clusterQueue: unreserved
   - name: tenantc
     prefix: ""
     users:
@@ -325,4 +325,4 @@ tenantGroups:
       - name: default
         clusterQueue: default
       - name: unreserved
-        clusterQueue: tenantc-unreserved
+        clusterQueue: unreserved
