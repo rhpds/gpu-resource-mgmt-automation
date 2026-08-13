@@ -6,7 +6,7 @@ gpuDiscovery:
   enabled: false
 
 kueue:
-  tenants: "tenanta:tenanta-user-,tenantb:tenantb-user-,tenantc:tenantc-user-"
+  tenants: "tenanta:tenanta-,tenantb:tenantb-,tenantc:tenantc-"
 
 gpuConfig:
   resources:

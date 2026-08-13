@@ -268,7 +268,7 @@ userNamespaces:
 # Each entry creates user namespaces, local queues, and role bindings for all users in the group.
 tenantGroups:
   - name: tenanta
-    prefix: "tenanta-user-"
+    prefix: ""
     users:
       - tenanta-user1
       - tenanta-user2
@@ -290,7 +290,7 @@ tenantGroups:
       - name: unreserved
         clusterQueue: unreserved
   - name: tenantb
-    prefix: "tenantb-user-"
+    prefix: ""
     users:
       - tenantb-user1
       - tenantb-user2
@@ -312,7 +312,7 @@ tenantGroups:
       - name: unreserved
         clusterQueue: unreserved
   - name: tenantc
-    prefix: "tenantc-user-"
+    prefix: ""
     users:
       - tenantc-user1
       - tenantc-user2
