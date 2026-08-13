@@ -152,57 +152,6 @@ clusterQueues:
           default-flavor:
             cpu: 32
             memory: 128Gi
-  # Per-tenant unreserved CQs — in each tenant's cohort so preemption works correctly.
-  # Unreserved workloads from tenant users land here (via the 'unreserved' LocalQueue)
-  # and can be preempted by reserved workloads in the same cohort.
-  tenanta-unreserved:
-    cohort: tenanta
-    preemption:
-      reclaimWithinCohort: Never
-      borrowWithinCohort:
-        policy: LowerPriority
-      withinClusterQueue: LowerPriority
-    resourceGroups:
-      - flavors:
-          gb200-tenanta:
-            cpu: 0
-            memory: 0Gi
-            nvidia.com/gpu: 0
-            nvidia.com/mig-3g.93gb: 0
-            nvidia.com/mig-2g.47gb: 0
-            nvidia.com/mig-1g.23gb: 0
-  tenantb-unreserved:
-    cohort: tenantb
-    preemption:
-      reclaimWithinCohort: Never
-      borrowWithinCohort:
-        policy: LowerPriority
-      withinClusterQueue: LowerPriority
-    resourceGroups:
-      - flavors:
-          gb200-tenantb:
-            cpu: 0
-            memory: 0Gi
-            nvidia.com/gpu: 0
-            nvidia.com/mig-3g.93gb: 0
-            nvidia.com/mig-2g.47gb: 0
-            nvidia.com/mig-1g.23gb: 0
-  tenantc-unreserved:
-    cohort: tenantc
-    preemption:
-      reclaimWithinCohort: Never
-      borrowWithinCohort:
-        policy: LowerPriority
-      withinClusterQueue: LowerPriority
-    resourceGroups:
-      - flavors:
-          gb200-tenantc:
-            cpu: 0
-            memory: 0Gi
-            nvidia.com/gpu: 0
-            nvidia.com/mig-3g.93gb: 0
-            nvidia.com/mig-2g.47gb: 0
-            nvidia.com/mig-1g.23gb: 0
 
 cohorts: {}
 
