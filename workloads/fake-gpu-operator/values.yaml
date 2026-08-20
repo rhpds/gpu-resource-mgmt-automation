@@ -15,6 +15,15 @@ topology:
       gpuProduct: NVIDIA-GB200-NVL
       gpuCount: 264
       gpuMemory: 196608
+      otherDevices:
+        - name: nvidia.com/mig-1g.23gb
+          count: 1848
+        - name: nvidia.com/mig-2g.47gb
+          count: 528
+        - name: nvidia.com/mig-3g.93gb
+          count: 528
+        - name: nvidia.com/mig-7g.189gb
+          count: 264
   nodePoolLabelKey: run.ai/simulated-gpu-node-pool
   migStrategy: none
 
