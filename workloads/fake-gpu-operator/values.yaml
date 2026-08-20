@@ -16,7 +16,7 @@ topology:
       gpuCount: 264
       gpuMemory: 196608
   nodePoolLabelKey: run.ai/simulated-gpu-node-pool
-  migStrategy: mixed
+  migStrategy: none
 
 kwokGpuDevicePlugin:
   enabled: false
