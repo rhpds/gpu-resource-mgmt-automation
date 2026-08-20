@@ -51,10 +51,7 @@ clusterRoles:
   - name: workshop-tenant-admin
     rules:
       - apiGroups: [""]
-        resources: ["nodes", "namespaces", "pods", "pods/log", "services", "configmaps", "events"]
-        verbs: ["get", "list", "watch"]
-      - apiGroups: ["project.openshift.io"]
-        resources: ["projects"]
+        resources: ["nodes", "pods", "pods/log", "services", "configmaps", "events"]
         verbs: ["get", "list", "watch"]
       - apiGroups: ["kueue.x-k8s.io"]
         resources:
