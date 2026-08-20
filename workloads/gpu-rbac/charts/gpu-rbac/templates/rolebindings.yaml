@@ -42,6 +42,7 @@
 {{- range $i := until (int $.Values.tenantCount) }}
 {{- $n := add1 $i }}
 {{- $tName := printf "%s%d" $.Values.tenantPrefix $n }}
+{{- $adminUser := printf "%s-admin" $tName }}
 {{- range $uname := $.Values.tenantUsers }}
 {{- $fullUser := printf "%s-%s" $tName $uname }}
 {{- range $clusterRole := $.Values.tenantClusterRoles }}
@@ -52,5 +53,9 @@
 {{- $builder := dict "name" "builder-hostmount-scc" "namespace" $fullUser "clusterRole" "system:openshift:scc:hostmount-anyuid-v2" "serviceAccounts" (list (dict "name" "builder" "namespace" $fullUser)) }}
 ---
 {{ include "rbac.role-binding" $builder }}
+{{- /* Give the tenant admin view access in each user namespace so they can see pods/workloads */}}
+{{- $adminRb := dict "name" (printf "%s-view" $adminUser) "namespace" $fullUser "clusterRole" "view" "users" (list $adminUser) }}
+---
+{{ include "rbac.role-binding" $adminRb }}
 {{- end }}
 {{- end }}
