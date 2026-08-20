@@ -51,6 +51,8 @@ statusExporter:
   image:
     repository: quay.io/eformat/fake-gpu-operator-status-exporter
     tag: latest
+  kwok:
+    enabled: false
 
 topologyServer:
   image:
