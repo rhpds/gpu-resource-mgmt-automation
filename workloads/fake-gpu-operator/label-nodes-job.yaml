@@ -78,32 +78,9 @@ spec:
             - -c
             - |
               MIG_CONFIG=$(cat /config/mig.config)
-              # GPU allocatable counts: 99 tenants × 8 GPUs / 3 nodes = 264 full GPUs per node
-              # MIG slices: 264 GPUs × (7, 2, 2, 1) per GPU for GB200 NVL partitioning
-              GPU_COUNT=264
-              MIG_1G=1848
-              MIG_2G=528
-              MIG_3G=528
-              MIG_7G=264
-
               for node in $(oc get nodes -l node-role.kubernetes.io/worker --no-headers -o name); do
                 echo "Labeling $node -> pool: gpu-pool"
                 oc label "$node" run.ai/simulated-gpu-node-pool=gpu-pool --overwrite
                 oc label "$node" node-role.kubernetes.io/runai-dynamic-mig=true --overwrite
                 oc annotate "$node" "run.ai/mig.config=${MIG_CONFIG}" --overwrite
-
-                # Patch node allocatable with GPU + MIG resource counts statically
-                nodename=$(echo "$node" | cut -d/ -f2)
-                echo "Patching $nodename allocatable: gpu=$GPU_COUNT, mig-1g.23gb=$MIG_1G"
-                oc patch node "$nodename" --subresource=status --type=merge -p "{
-                  \"status\": {
-                    \"allocatable\": {
-                      \"nvidia.com/gpu\": \"${GPU_COUNT}\",
-                      \"nvidia.com/mig-1g.23gb\": \"${MIG_1G}\",
-                      \"nvidia.com/mig-2g.47gb\": \"${MIG_2G}\",
-                      \"nvidia.com/mig-3g.93gb\": \"${MIG_3G}\",
-                      \"nvidia.com/mig-7g.189gb\": \"${MIG_7G}\"
-                    }
-                  }
-                }"
               done
