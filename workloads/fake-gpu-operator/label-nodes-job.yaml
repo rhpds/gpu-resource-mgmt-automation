@@ -37,17 +37,17 @@ data:
     version: v1
     mig-configs:
       selected:
-      - devices: ["0","1","2","3","4","5","6","7"]
+      - devices: all
         mig-enabled: true
         mig-devices:
           - name: 1g.23gb
-            count: 7
+            count: 1848
           - name: 2g.47gb
-            count: 2
+            count: 528
           - name: 3g.93gb
-            count: 2
+            count: 528
           - name: 7g.189gb
-            count: 1
+            count: 264
 ---
 apiVersion: batch/v1
 kind: Job
@@ -75,13 +75,9 @@ spec:
             - -c
             - |
               MIG_CONFIG=$(cat /config/mig.config)
-              POOLS=(tenanta tenantb tenantc)
-              IDX=0
               for node in $(oc get nodes -l node-role.kubernetes.io/worker --no-headers -o name); do
-                POOL=${POOLS[$((IDX % 3))]}
-                echo "Labeling $node -> pool: $POOL"
-                oc label "$node" run.ai/simulated-gpu-node-pool="$POOL" --overwrite
+                echo "Labeling $node -> pool: gpu-pool"
+                oc label "$node" run.ai/simulated-gpu-node-pool=gpu-pool --overwrite
                 oc label "$node" node-role.kubernetes.io/runai-dynamic-mig=true --overwrite
                 oc annotate "$node" "run.ai/mig.config=${MIG_CONFIG}" --overwrite
-                IDX=$((IDX + 1))
               done

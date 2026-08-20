@@ -6,23 +6,14 @@ topologyConfigMap:
   enabled: true
 
 topology:
-  # nodePools is a map of node pool name to node pool configuration.
-  # Nodes are assigned to node pools based on the node pool label's value (key is configurable via nodePoolLabelKey).
-  #
-  # 3x NVIDIA GB200 NVL nodes — one per tenant (tenanta, tenantb, tenantc).
-  # gpuMemory is in MiB: 192 GiB = 196608 MiB
+  # Single shared pool across all 3 nodes.
+  # 99 tenants × 8 GPUs / 3 nodes = 264 GPUs per node.
+  # MIG counts scaled ×33 from the per-tenant baseline.
+  # gpuMemory in MiB: 192 GiB = 196608 MiB
   nodePools:
-    tenanta:
+    gpu-pool:
       gpuProduct: NVIDIA-GB200-NVL
-      gpuCount: 8
-      gpuMemory: 196608
-    tenantb:
-      gpuProduct: NVIDIA-GB200-NVL
-      gpuCount: 8
-      gpuMemory: 196608
-    tenantc:
-      gpuProduct: NVIDIA-GB200-NVL
-      gpuCount: 8
+      gpuCount: 264
       gpuMemory: 196608
   nodePoolLabelKey: run.ai/simulated-gpu-node-pool
   migStrategy: mixed

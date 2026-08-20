@@ -14,13 +14,17 @@
 ---
 {{ include "rbac.namespace" $ns }}
 {{- end }}
-{{- range $group := .Values.tenantGroups }}
-{{- range $username := concat $group.users $group.htpasswdUsers }}
+{{- range $i := until (int $.Values.tenantCount) }}
+{{- $n := add1 $i }}
+{{- $tName := printf "%s%d" $.Values.tenantPrefix $n }}
+{{- range $uname := $.Values.tenantUsers }}
+{{- $fullUser := printf "%s-%s" $tName $uname }}
 {{- $ns := dict }}
-{{- $_ := set $ns "name" (printf "%s%s" $group.prefix $username) }}
-{{- $ctx := dict "username" $username "Template" $.Template "Chart" $.Chart "Release" $.Release }}
-{{- $_ := set $ns "labels" (tpl (toJson $group.labels) $ctx | fromJson) }}
-{{- $_ := set $ns "annotations" (tpl (toJson $group.annotations) $ctx | fromJson) }}
+{{- $_ := set $ns "name" $fullUser }}
+{{- $labels := deepCopy $.Values.tenantNamespaceLabels }}
+{{- $_ := set $labels "rhai-tmm.dev/owner" $fullUser }}
+{{- $_ := set $ns "labels" $labels }}
+{{- $_ := set $ns "annotations" $.Values.tenantNamespaceAnnotations }}
 ---
 {{ include "rbac.namespace" $ns }}
 {{- end }}

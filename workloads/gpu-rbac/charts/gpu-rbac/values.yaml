@@ -116,16 +116,12 @@ clusterRoleBindings:
       - users
   - name: gpu-booking-plugin-admin
     clusterRole: gpu-booking-plugin-admin
-    users:
-      - tenanta-admin
-      - tenantb-admin
-      - tenantc-admin
+    groups:
+      - tenant-admins
   - name: workshop-tenant-admin
     clusterRole: workshop-tenant-admin
-    users:
-      - tenanta-admin
-      - tenantb-admin
-      - tenantc-admin
+    groups:
+      - tenant-admins
 
 namespaces:
   - name: maas
@@ -159,15 +155,9 @@ topologies: {}
 
 resourceFlavors:
   default-flavor: {}
-  gb200-tenanta:
+  gb200:
     nodeLabels:
-      run.ai/simulated-gpu-node-pool: tenanta
-  gb200-tenantb:
-    nodeLabels:
-      run.ai/simulated-gpu-node-pool: tenantb
-  gb200-tenantc:
-    nodeLabels:
-      run.ai/simulated-gpu-node-pool: tenantc
+      run.ai/simulated-gpu-node-pool: gpu-pool
 
 workloadPriorityClasses:
   high-priority:
@@ -257,72 +247,31 @@ userNamespaces:
   htpasswdUsers: []
   users: []
 
-# tenantGroups defines multiple isolated tenant namespaces, each with their own prefix.
-# Each entry creates user namespaces, local queues, and role bindings for all users in the group.
-tenantGroups:
-  - name: tenanta
-    prefix: ""
-    users:
-      - tenanta-user1
-      - tenanta-user2
-    htpasswdUsers: []
-    labels:
-      opendatahub.io/dashboard: "true"
-      kueue-managed: "true"
-      kueue.openshift.io/managed: "true"
-      rhai-tmm.dev/owner: "{{ lower .username }}"
-    annotations:
-      openshift.io/display-name: "Tenant A - {{ title .username }}"
-      openshift.io/description: Tenant A namespace for {{ .username }}
-      openshift.io/requester: gitops
-    clusterRoles:
-      - admin
-    localQueues:
-      - name: default
-        clusterQueue: default
-      - name: unreserved
-        clusterQueue: tenanta-unreserved
-  - name: tenantb
-    prefix: ""
-    users:
-      - tenantb-user1
-      - tenantb-user2
-    htpasswdUsers: []
-    labels:
-      opendatahub.io/dashboard: "true"
-      kueue-managed: "true"
-      kueue.openshift.io/managed: "true"
-      rhai-tmm.dev/owner: "{{ lower .username }}"
-    annotations:
-      openshift.io/display-name: "Tenant B - {{ title .username }}"
-      openshift.io/description: Tenant B namespace for {{ .username }}
-      openshift.io/requester: gitops
-    clusterRoles:
-      - admin
-    localQueues:
-      - name: default
-        clusterQueue: default
-      - name: unreserved
-        clusterQueue: tenantb-unreserved
-  - name: tenantc
-    prefix: ""
-    users:
-      - tenantc-user1
-      - tenantc-user2
-    htpasswdUsers: []
-    labels:
-      opendatahub.io/dashboard: "true"
-      kueue-managed: "true"
-      kueue.openshift.io/managed: "true"
-      rhai-tmm.dev/owner: "{{ lower .username }}"
-    annotations:
-      openshift.io/display-name: "Tenant C - {{ title .username }}"
-      openshift.io/description: Tenant C namespace for {{ .username }}
-      openshift.io/requester: gitops
-    clusterRoles:
-      - admin
-    localQueues:
-      - name: default
-        clusterQueue: default
-      - name: unreserved
-        clusterQueue: tenantc-unreserved
+# Count-based tenant generation — replaces the old tenantGroups list.
+# Generates t1-user1/t1-user2 ... t99-user1/t99-user2 namespaces, LQs, and RoleBindings.
+tenantCount: 99
+tenantPrefix: "t"
+
+tenantUsers:
+  - user1
+  - user2
+
+tenantNamespaceLabels:
+  opendatahub.io/dashboard: "true"
+  kueue-managed: "true"
+  kueue.openshift.io/managed: "true"
+
+tenantNamespaceAnnotations:
+  openshift.io/requester: gitops
+
+tenantClusterRoles:
+  - admin
+
+tenantLocalQueues:
+  - name: default
+    clusterQueue: default
+  - name: unreserved
+    clusterQueueSuffix: "-unreserved"
+
+# tenantGroups kept empty for backwards compat with existing templates.
+tenantGroups: []

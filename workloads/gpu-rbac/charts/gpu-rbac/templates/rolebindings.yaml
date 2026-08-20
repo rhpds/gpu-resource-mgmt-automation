@@ -39,23 +39,18 @@
 ---
 {{ include "rbac.role-binding" $builderRoleBinding }}
 {{- end }}
-{{- range $group := .Values.tenantGroups }}
-{{- range $username := concat $group.users $group.htpasswdUsers }}
-{{- range $clusterRole := $group.clusterRoles }}
-{{- $userRoleBinding := dict }}
-{{- $_ := set $userRoleBinding "name" (printf "%s-%s" $username $clusterRole) }}
-{{- $_ := set $userRoleBinding "namespace" (printf "%s%s" $group.prefix $username) }}
-{{- $_ := set $userRoleBinding "clusterRole" $clusterRole }}
-{{- $_ := set $userRoleBinding "users" (list $username) }}
+{{- range $i := until (int $.Values.tenantCount) }}
+{{- $n := add1 $i }}
+{{- $tName := printf "%s%d" $.Values.tenantPrefix $n }}
+{{- range $uname := $.Values.tenantUsers }}
+{{- $fullUser := printf "%s-%s" $tName $uname }}
+{{- range $clusterRole := $.Values.tenantClusterRoles }}
+{{- $rb := dict "name" (printf "%s-%s" $fullUser $clusterRole) "namespace" $fullUser "clusterRole" $clusterRole "users" (list $fullUser) }}
 ---
-{{ include "rbac.role-binding" $userRoleBinding }}
+{{ include "rbac.role-binding" $rb }}
 {{- end }}
-{{- $builderRoleBinding := dict }}
-{{- $_ := set $builderRoleBinding "name" "builder-hostmount-scc" }}
-{{- $_ := set $builderRoleBinding "namespace" (printf "%s%s" $group.prefix $username) }}
-{{- $_ := set $builderRoleBinding "clusterRole" "system:openshift:scc:hostmount-anyuid-v2" }}
-{{- $_ := set $builderRoleBinding "serviceAccounts" (list (dict "name" "builder" "namespace" (printf "%s%s" $group.prefix $username))) }}
+{{- $builder := dict "name" "builder-hostmount-scc" "namespace" $fullUser "clusterRole" "system:openshift:scc:hostmount-anyuid-v2" "serviceAccounts" (list (dict "name" "builder" "namespace" $fullUser)) }}
 ---
-{{ include "rbac.role-binding" $builderRoleBinding }}
+{{ include "rbac.role-binding" $builder }}
 {{- end }}
 {{- end }}

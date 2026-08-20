@@ -43,7 +43,12 @@ kueue:
   syncEnabled: true
   syncIntervalSeconds: 30
   syncDays: 7
+  # tenants: manual override (takes precedence over count-based generation)
   tenants: ""
+  # count-based tenant generation
+  tenantCount: 99
+  tenantPrefix: "t"
+  tenantFlavor: "gb200"
 
 bookingWindowDays: 30
 

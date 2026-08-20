@@ -6,7 +6,11 @@ gpuDiscovery:
   enabled: false
 
 kueue:
-  tenants: "tenanta:tenanta-:gb200-tenanta,tenantb:tenantb-:gb200-tenantb,tenantc:tenantc-:gb200-tenantc"
+  # tenants override cleared — chart generates from tenantCount/tenantPrefix/tenantFlavor
+  tenants: ""
+  tenantCount: 99
+  tenantPrefix: "t"
+  tenantFlavor: "gb200"
 
 gpuConfig:
   resources:

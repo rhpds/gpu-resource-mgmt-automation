@@ -1,25 +1,38 @@
 ---
 {{- $allUsers := list }}
+{{- $allAdmins := list }}
 {{- range .Values.userNamespaces.users }}
 {{- $allUsers = append $allUsers . }}
 {{- end }}
 {{- range .Values.userNamespaces.htpasswdUsers }}
 {{- $allUsers = append $allUsers . }}
 {{- end }}
-{{- range .Values.tenantGroups }}
-{{- range .users }}
-{{- $allUsers = append $allUsers . }}
-{{- end }}
-{{- range .htpasswdUsers }}
-{{- $allUsers = append $allUsers . }}
+{{- range $i := until (int $.Values.tenantCount) }}
+{{- $n := add1 $i }}
+{{- $tName := printf "%s%d" $.Values.tenantPrefix $n }}
+{{- $admin := printf "%s-admin" $tName }}
+{{- $allAdmins = append $allAdmins $admin }}
+{{- range $.Values.tenantUsers }}
+{{- $fullUser := printf "%s-%s" $tName . }}
+{{- $allUsers = append $allUsers $fullUser }}
 {{- end }}
 {{- end }}
 {{- $allUsers = $allUsers | uniq }}
+{{- $allAdmins = $allAdmins | uniq }}
 apiVersion: user.openshift.io/v1
 kind: Group
 metadata:
   name: users
 users:
 {{- range $allUsers }}
+  - {{ . }}
+{{- end }}
+---
+apiVersion: user.openshift.io/v1
+kind: Group
+metadata:
+  name: tenant-admins
+users:
+{{- range $allAdmins }}
   - {{ . }}
 {{- end }}

@@ -20,13 +20,19 @@
 {{ include "kueue.local-queue" $userQueue }}
 {{- end }}
 {{- end }}
-{{- range $group := $.Values.tenantGroups }}
-{{- range $username := concat $group.users $group.htpasswdUsers }}
-{{- range $localQueue := $group.localQueues }}
-{{- $userQueue := dict }}
-{{- $_ := set $userQueue "name" $localQueue.name }}
-{{- $_ := set $userQueue "namespace" (printf "%s%s" $group.prefix $username) }}
-{{- $_ := set $userQueue "clusterQueue" $localQueue.clusterQueue }}
+{{- range $i := until (int $.Values.tenantCount) }}
+{{- $n := add1 $i }}
+{{- $tName := printf "%s%d" $.Values.tenantPrefix $n }}
+{{- range $uname := $.Values.tenantUsers }}
+{{- $fullUser := printf "%s-%s" $tName $uname }}
+{{- range $lq := $.Values.tenantLocalQueues }}
+{{- $cq := "" }}
+{{- if $lq.clusterQueueSuffix }}
+{{- $cq = printf "%s%s" $tName $lq.clusterQueueSuffix }}
+{{- else }}
+{{- $cq = $lq.clusterQueue }}
+{{- end }}
+{{- $userQueue := dict "name" $lq.name "namespace" $fullUser "clusterQueue" $cq }}
 ---
 {{ include "kueue.local-queue" $userQueue }}
 {{- end }}
