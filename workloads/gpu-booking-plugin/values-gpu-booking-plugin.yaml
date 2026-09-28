@@ -1,6 +1,6 @@
 ---
 image:
-  tag: latest
+  tag: system
 
 gpuDiscovery:
   enabled: true
