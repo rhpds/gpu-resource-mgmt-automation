@@ -175,7 +175,7 @@ spec:
             name: mig-config
       containers:
         - name: labeler
-          image: registry.redhat.io/openshift4/ose-cli:latest
+          image: registry.redhat.io/openshift4/ose-cli-rhel9:latest
           volumeMounts:
             - name: mig-config
               mountPath: /config
