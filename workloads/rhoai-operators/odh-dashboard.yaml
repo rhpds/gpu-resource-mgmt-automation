@@ -49,7 +49,6 @@ spec:
     aiAssetCustomEndpoints: true
     enablement: true
     genAiStudio: true
-    maasAuthPolicies: true
     modelAsService: true
     trainingJobs: true
     observabilityDashboard: true
