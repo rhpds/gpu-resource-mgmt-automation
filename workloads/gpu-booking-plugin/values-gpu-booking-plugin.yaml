@@ -1,6 +1,6 @@
 ---
 image:
-  tag: latest
+  tag: tenant
 
 gpuDiscovery:
   enabled: true
