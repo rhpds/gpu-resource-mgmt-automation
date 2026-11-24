@@ -1,4 +1,3 @@
----
 environment:
   openshift: false
   fakeCSVVersion: 25.10.0
@@ -57,6 +56,11 @@ topologyServer:
 
 statusExporter:
   enabled: true
+  nodeResourceTopology:
+    enabled: false      # publish NodeResourceTopology CRs for pools with a `numa` block (off by default)
+    installCRD: true    # install the NRT CRD; set false if it already exists (e.g. NFD/KAI)
+  podResources:
+    enabled: false      # run fake kubelet podresources gRPC server + sysfs cpulist renderer for KAI npe (off by default)
   image:
     pullPolicy: Always
     repository: ghcr.io/run-ai/fake-gpu-operator/status-exporter
@@ -116,8 +120,23 @@ migFaker:
     repository: ghcr.io/run-ai/fake-gpu-operator/mig-faker
     tag: ""
 
+# Per-pool nvml-mock DaemonSet image (consumed by mock controller).
+nvmlMock:
+  image:
+    repository: ghcr.io/nvidia/nvml-mock
+    # Pin: upstream :latest is rolling and its v0.2.0 build (2026-06-12) broke e2e-mock's
+    # libnvidia-ml.so loading. sha-1706195 is the last green build; bump when e2e adapts to v0.2.x.
+    tag: sha-1706195
+    pullPolicy: IfNotPresent
+
+# When true, installs upstream gpu-operator subchart. When false, renders a
+# placeholder Deployment polyfill (the ClusterPolicy CRD ships via crds/).
 gpuOperator:
-  enabled: true
+  enabled: false
+
+# When true, installs nvidia-dra-driver-gpu subchart for DRA-based GPU allocation.
+nvidiaDraDriver:
+  enabled: false
 
 runtimeClass:
   enabled: true
@@ -187,6 +206,11 @@ topology:
   nodePoolLabelKey: run.ai/simulated-gpu-node-pool
   migStrategy: mixed
 
+builtinProfiles:
+  enabled: true
+
+customProfiles: {}
+
 computeDomainController:
   image:
     pullPolicy: Always
@@ -228,3 +252,92 @@ kwokComputeDomainDraPlugin:
     limits:
       cpu: "200m"
       memory: "400Mi"
+
+# Mirrors NVIDIA/k8s-test-infra's canonical nvml-mock + GPU Operator integration:
+# https://github.com/NVIDIA/k8s-test-infra/blob/main/tests/e2e/gpu-operator-values.yaml
+gpu-operator:
+  driver:
+    enabled: false
+  toolkit:
+    enabled: false
+    # When toolkit.enabled is flipped to true, the installer's device-node
+    # enumeration step queries real NVML and fails on mock-NVML nodes with
+    # "no NVIDIA devices found". Skip it — nvml-mock already creates the
+    # /dev/nvidia* nodes under its driver root.
+    env:
+      - name: CREATE_DEVICE_NODES
+        value: "none"
+  dcgm:
+    enabled: false
+  dcgmExporter:
+    enabled: false
+  # MIG isn't supported by mock NVML — strategy=none avoids the device-plugin
+  # treating MIG enumeration as fatal.
+  mig:
+    strategy: none
+  migManager:
+    enabled: false
+  nodeStatusExporter:
+    enabled: false
+  cdi:
+    enabled: true
+    default: true
+  devicePlugin:
+    enabled: true
+    config:
+      name: ""
+    env:
+      - name: NVIDIA_DRIVER_ROOT
+        value: "/var/lib/nvml-mock/driver"
+  # GFD's job (write nvidia.com/gpu.product/count/memory node labels) is
+  # already covered by FGO's status-exporter, which reads from the topology
+  # CM. GFD's own NVML lookup fails on mock-NVML containers because its
+  # pod template doesn't mount /var/lib/nvml-mock. Disabled to avoid a
+  # cosmetic CrashLoopBackOff that doesn't add functionality.
+  gfd:
+    enabled: false
+    env:
+      - name: NVIDIA_DRIVER_ROOT
+        value: "/var/lib/nvml-mock/driver"
+  validator:
+    driver:
+      env:
+        - name: DRIVER_INSTALL_DIR
+          value: "/run/nvidia/driver"
+        - name: LD_LIBRARY_PATH
+          value: "/run/nvidia/driver/usr/lib64"
+        - name: DISABLE_DEV_CHAR_SYMLINK_CREATION
+          value: "true"
+    toolkit:
+      env:
+        - name: NVIDIA_VISIBLE_DEVICES
+          value: "all"
+    cuda:
+      env:
+        - name: WITH_WORKLOAD
+          value: "false"
+    plugin:
+      env:
+        - name: LD_LIBRARY_PATH
+          value: "/run/nvidia/driver/usr/lib64"
+
+# Mirrors nvml-mock README's DRA recipe.
+# Subchart renamed upstream: nvidia-dra-driver-gpu (<=25.12.0, last NGC
+# release) became dra-driver-nvidia-gpu (>=0.4.0). 0.5.1 is the release
+# verified end-to-end on OCP 5 (k8s 1.36) and the first NGC release with
+# the ConsumableShares alpha gate. 25.12.0 predates it — do not downgrade.
+# To enable consumable shares (e.g. 4 shares per device), consumers set:
+#   dra-driver-nvidia-gpu:
+#     consumableShares: "4"        # mode: "memory", "unlimited", or a positive
+#                                  # integer → CONSUMABLE_SHARES env on the
+#                                  # kubelet plugin's gpus container
+#     featureGates:
+#       ConsumableShares: true     # alpha; requires k8s >= 1.36, where
+#                                  # DRAConsumableCapacity is default-on
+# Both default to off here — enabling them is a consumer decision.
+dra-driver-nvidia-gpu:
+  nvidiaDriverRoot: /var/lib/nvml-mock/driver
+  gpuResourcesEnabledOverride: true
+  resources:
+    computeDomains:
+      enabled: false

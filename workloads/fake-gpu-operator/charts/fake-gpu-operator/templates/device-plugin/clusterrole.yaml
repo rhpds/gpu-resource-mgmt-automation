@@ -1,5 +1,4 @@
----
-{{- if .Values.devicePlugin.enabled -}}
+{{- if (.Values.devicePlugin).enabled -}}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -17,4 +16,14 @@ rules:
       - nodes/status
     verbs:
       - patch
+{{- if (.Values.environment).openshift }}
+  - apiGroups:
+      - security.openshift.io
+    resources:
+      - securitycontextconstraints
+    resourceNames:
+      - privileged
+    verbs:
+      - use
+{{- end }}
 {{- end -}}

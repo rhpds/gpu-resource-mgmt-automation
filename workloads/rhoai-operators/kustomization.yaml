@@ -2,6 +2,7 @@
 resources:
   - dsc-cr.yaml
   - dsci-cr.yaml
+  - kueue-cr.yaml
   - odh-dashboard.yaml
   - hardware-profile.yaml
   - authorino-cr.yaml

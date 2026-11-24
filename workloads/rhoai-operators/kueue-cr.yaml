@@ -1,0 +1,38 @@
+---
+apiVersion: kueue.openshift.io/v1
+kind: Kueue
+metadata:
+  name: cluster
+  namespace: redhat-ods-operator
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  config:
+    integrations:
+      frameworks:
+        - BatchJob
+        - Deployment
+        - Pod
+        - PyTorchJob
+        - RayCluster
+        - RayJob
+        - StatefulSet
+        - TrainJob
+    preemption:
+      preemptionPolicy: Classical
+    # DRA quota mapping (Kueue 1.5, requires OCP 5.0+): charge DeviceClass
+    # gpu.nvidia.com devices against the logical resource nvidia.com/gpu in
+    # ClusterQueue quotas. Without this, DRA workloads are inadmissible with
+    # "DeviceClass gpu.nvidia.com is not mapped in DRA configuration for
+    # podset <podset>".
+    # Kueue reads this config only at controller startup — the operand must
+    # restart after a change.
+    resources:
+      deviceClassMappings:
+        - name: nvidia.com/gpu
+          deviceClassNames:
+            - gpu.nvidia.com
+  logLevel: Normal
+  managementState: Managed
+  operatorLogLevel: Normal

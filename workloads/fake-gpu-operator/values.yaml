@@ -6,16 +6,34 @@ topologyConfigMap:
   enabled: true
 
 topology:
-  # nodePools is a map of node pool name to node pool configuration.
-  # Nodes are assigned to node pools based on the node pool label's value (key is configurable via nodePoolLabelKey).
-  # 
-  # For example, nodes that have the label "run.ai/simulated-gpu-node-pool: default"
-  # will be assigned to the "default" node pool.
+  # Profile-driven node pools (new schema). Nodes join a pool via the
+  # run.ai/simulated-gpu-node-pool label (key configurable via nodePoolLabelKey).
+  # Profiles are the built-in gpu-profile-<name> ConfigMaps shipped by the chart.
   nodePools:
+    # Legacy device-plugin path — serves the live gpu-booking plugin unchanged.
+    # 8x NVIDIA L40S 48GB (the l40s profile's default device count).
+    # The nulls drop the chart-default pool's old-format fields (Tesla-K80
+    # demo default); with `gpu.profile` set, the profile drives everything.
     default:
-      gpuProduct: NVIDIA-L40S
-      gpuCount: 8
-      gpuMemory: 49152
+      gpuProduct: null
+      gpuCount: null
+      gpuMemory: null
+      gpu:
+        backend: fake
+        profile: l40s
+    # DRA consumable shares (4 claims/device) — real NVIDIA DRA driver on
+    # mock NVML. Label nodes into this pool to activate.
+    dra-share:
+      gpu:
+        backend: mock
+        profile: a100
+    # Phase B: dynamic MIG via claims. Kept separate from dra-share per pool
+    # hygiene (claim-driven repartitioning owns these devices).
+    # Label nodes into this pool to activate.
+    dra-mig:
+      gpu:
+        backend: mock
+        profile: a100
   nodePoolLabelKey: run.ai/simulated-gpu-node-pool
   migStrategy: none
 
@@ -25,27 +43,43 @@ kwokGpuDevicePlugin:
 devicePlugin:
   image:
     repository: quay.io/eformat/fake-gpu-operator-device-plugin
-    tag: latest
+    # :rhoai-36-dra isolates this workstream from :latest consumers
+    # (prelude2 and other environments pull :latest — do not reuse that tag).
+    tag: rhoai-36-dra
 
 migFaker:
   enabled: false # we only need this when using run.ai scheduler
   image:
     repository: quay.io/eformat/fake-gpu-operator-mig-faker
-    tag: latest
+    tag: rhoai-36-dra
 
 statusUpdater:
   image:
     repository: quay.io/eformat/fake-gpu-operator-status-updater
-    tag: latest
+    tag: rhoai-36-dra
 
 statusExporter:
   enabled: true
   image:
     repository: quay.io/eformat/fake-gpu-operator-status-exporter
-    tag: latest
+    tag: rhoai-36-dra
 
 topologyServer:
   image:
     repository: quay.io/eformat/fake-gpu-operator-topology-server
-    tag: latest
+    tag: rhoai-36-dra
 
+# DRA workstream: real NVIDIA DRA driver (dra-driver-nvidia-gpu 0.5.1
+# subchart) against the mock-NVML pools. gpuOperator stays off — the fork's
+# own device-plugin serves the `default` (fake) pool.
+nvidiaDraDriver:
+  enabled: true
+
+dra-driver-nvidia-gpu:
+  # Consumable shares: 4 claims per device (integer mode) + alpha gate on.
+  # Requires k8s >= 1.36 (OCP 5) — DRAConsumableCapacity is default-on there.
+  # nvidiaDriverRoot / gpuResourcesEnabledOverride / computeDomains disable
+  # come from the chart's own defaults (mock-NVML wiring).
+  consumableShares: "4"
+  featureGates:
+    ConsumableShares: true

@@ -1,8 +1,12 @@
-{{- if .Values.topologyConfigMap.enabled -}}
+{{- if (.Values.topologyConfigMap).enabled -}}
 apiVersion: v1
 data:
   topology.yml: |-
+{{- if .Values.cluster }}
+{{ toYaml .Values.cluster | indent 4 }}
+{{- else }}
 {{ toYaml .Values.topology | indent 4 }}
+{{- end }}
 kind: ConfigMap
 metadata:
   name: topology

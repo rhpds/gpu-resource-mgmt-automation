@@ -49,6 +49,9 @@ spec:
     aiAssetCustomEndpoints: true
     enablement: true
     genAiStudio: true
+    gpuaas: true
+    guardrails: true
+    hardwareProfileDRA: true
     modelAsService: true
     trainingJobs: true
     observabilityDashboard: true

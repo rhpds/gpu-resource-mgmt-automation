@@ -1,5 +1,4 @@
----
-{{- if .Values.statusUpdater.enabled -}}
+{{- if (.Values.statusUpdater).enabled -}}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -25,6 +24,12 @@ rules:
   - apiGroups:
       - ""
     resources:
+      - nodes/status
+    verbs:
+      - patch
+  - apiGroups:
+      - ""
+    resources:
       - configmaps
     verbs:
       - get
@@ -33,6 +38,7 @@ rules:
       - create
       - list
       - delete
+      - watch
   - apiGroups:
       - scheduling.run.ai
     resources:
@@ -47,7 +53,31 @@ rules:
       - get
       - list
       - watch
-  {{- if .Values.statusUpdater.runaiIntegration.enabled }}
+  - apiGroups:
+      - apps
+    resources:
+      - daemonsets
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+{{- if (.Values.environment).openshift }}
+  # OpenShift re-checks SCC on pod updates against the updating user, so
+  # annotating reservation pods requires the SCC they run under.
+  - apiGroups:
+      - security.openshift.io
+    resources:
+      - securitycontextconstraints
+    resourceNames:
+      - kai-system
+    verbs:
+      - use
+{{- end }}
+  {{- if (.Values.statusUpdater).runaiIntegration.enabled }}
   - apiGroups:
       - ""
     resources:

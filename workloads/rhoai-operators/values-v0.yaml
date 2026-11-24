@@ -7,22 +7,10 @@ operators:
       name: redhat-ods-operator
       create: true
       global: true
-    channels: [stable-3.5] # v0,1
-    version: "3.5.0" # v1
+    channels: [stable-3.x] # v0,1
+    version: "3.6.0" # v1
     catalog: openshift-redhat-operators #v1
-    source: redhat-operators # v0
-    sourceNamespace: openshift-marketplace # v0
-    enabled: true
-
-  # tekton pipelines
-  - name: openshift-pipelines-operator-rh
-    namespace:
-      name: openshift-operators
-      create: false
-    channels: [latest] # v0,1
-    version: "1.23.0" # v1
-    catalog: openshift-redhat-operators #v1
-    source: redhat-operators # v0
+    source: rhoai-catalog-nightly #source: redhat-operators
     sourceNamespace: openshift-marketplace # v0
     enabled: true
 
@@ -32,8 +20,8 @@ operators:
       name: openshift-kueue-operator
       create: true
       global: true
-    channels: [stable-v1.4] # v0,1
-    version: "1.4.2" # v1
+    channels: [stable-v1.5] # v0,1
+    version: "1.5.0" # v1
     catalog: openshift-redhat-operators #v1
     source: redhat-operators # v0
     sourceNamespace: openshift-marketplace # v0
@@ -58,8 +46,8 @@ operators:
       name: kuadrant-system
       create: true
       global: true
-    channels: [stable] # v0,1
-    version: "1.4.3" # v1
+    channels: [stable-1.5] # v0,1
+    version: "1.5.0" # v1
     catalog: openshift-redhat-operators #v1
     source: redhat-operators # v0
     sourceNamespace: openshift-marketplace # v0

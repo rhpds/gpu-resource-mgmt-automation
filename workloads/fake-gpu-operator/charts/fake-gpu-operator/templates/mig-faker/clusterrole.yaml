@@ -1,5 +1,4 @@
----
-{{- if .Values.migFaker.enabled -}}
+{{- if (.Values.migFaker).enabled -}}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -23,4 +22,14 @@ rules:
       - update
       - list
       - watch
+{{- if (.Values.environment).openshift }}
+  - apiGroups:
+      - security.openshift.io
+    resources:
+      - securitycontextconstraints
+    resourceNames:
+      - privileged
+    verbs:
+      - use
+{{- end }}
 {{- end -}}
