@@ -28,6 +28,11 @@ spec:
     # 1 per allocated claim/share. Without a mapping, DRA workloads are
     # inadmissible with "DeviceClass gpu.nvidia.com is not mapped in DRA
     # configuration for podset <podset>".
+    # mig.nvidia.com (dynamic-MIG claims) charges the SAME logical surface:
+    # a carved partition books one unit of the A100 share pool, so MIG
+    # bookings show up in the booking app's consumed view next to share
+    # bookings. Phase C (config plugin DRA-awareness) may split MIG onto its
+    # own product-derived surface once the app models per-profile capacity.
     # ONE logical name per DeviceClass: nvidia.com/gpu stays the
     # device-plugin (extended resource) quota for the L40S pool and must NOT
     # also appear here — device-plugin workloads charge extended-resource
@@ -39,6 +44,7 @@ spec:
         - name: a100-sxm4-40gb-share
           deviceClassNames:
             - gpu.nvidia.com
+            - mig.nvidia.com
   logLevel: Normal
   managementState: Managed
   operatorLogLevel: Normal
