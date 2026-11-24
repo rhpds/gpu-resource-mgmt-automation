@@ -1,6 +1,6 @@
 ---
 image:
-  tag: latest
+  tag: rhoai-36-dra
 
 gpuDiscovery:
   enabled: true
