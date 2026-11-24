@@ -22,15 +22,21 @@ spec:
     preemption:
       preemptionPolicy: Classical
     # DRA quota mapping (Kueue 1.5, requires OCP 5.0+): charge DeviceClass
-    # gpu.nvidia.com devices against the logical resource nvidia.com/gpu in
-    # ClusterQueue quotas. Without this, DRA workloads are inadmissible with
-    # "DeviceClass gpu.nvidia.com is not mapped in DRA configuration for
-    # podset <podset>".
+    # gpu.nvidia.com devices against the logical resource the booking app
+    # emits for the DRA share surface (product-derived, see
+    # gpu-booking-dra-ui-ux.md): ClusterQueue quotas under that name count
+    # 1 per allocated claim/share. Without a mapping, DRA workloads are
+    # inadmissible with "DeviceClass gpu.nvidia.com is not mapped in DRA
+    # configuration for podset <podset>".
+    # ONE logical name per DeviceClass: nvidia.com/gpu stays the
+    # device-plugin (extended resource) quota for the L40S pool and must NOT
+    # also appear here — device-plugin workloads charge extended-resource
+    # quota natively and never consult this mapping.
     # Kueue reads this config only at controller startup — the operand must
     # restart after a change.
     resources:
       deviceClassMappings:
-        - name: nvidia.com/gpu
+        - name: a100-sxm4-40gb-share
           deviceClassNames:
             - gpu.nvidia.com
   logLevel: Normal

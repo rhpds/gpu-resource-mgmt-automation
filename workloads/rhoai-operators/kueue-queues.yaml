@@ -6,9 +6,11 @@
 # carries its borrow-model quota shape verbatim:
 #   - ClusterQueues carry ZEROED quotas; the Cohort holds the real capacity
 #     and workloads borrow from it (borrowWithinCohort in unreserved-priority).
-#   - DRA note: with deviceClassMappings in kueue-cr.yaml, ResourceClaims
-#     (gpu.nvidia.com) charge the same logical nvidia.com/gpu quota as the
-#     device-plugin pool's GPUs — one shared quota pool for both worlds.
+#   - DRA note: DRA claims (DeviceClass gpu.nvidia.com) charge the
+#     product-derived logical quota a100-sxm4-40gb-share via the
+#     deviceClassMappings in kueue-cr.yaml — 1 quota unit per allocated
+#     claim/share (2 DRA nodes x 8 devices x 4 shares = 64). nvidia.com/gpu
+#     remains the device-plugin quota for the default L40S pool only.
 # Sizes are placeholders for the new cluster: set cpu/memory to
 # worker-count x per-node, and nvidia.com/gpu to the default L40S pool size.
 ---
@@ -40,6 +42,7 @@ spec:
         - cpu
         - memory
         - nvidia.com/gpu
+        - a100-sxm4-40gb-share
       flavors:
         - name: gpu-pool
           resources:
@@ -49,6 +52,8 @@ spec:
               nominalQuota: "224Gi" # TODO(mike): worker-count x per-node memory
             - name: nvidia.com/gpu
               nominalQuota: "8" # default L40S pool size
+            - name: a100-sxm4-40gb-share
+              nominalQuota: "64" # DRA shares: 2 nodes x 8 devices x 4 shares
 ---
 apiVersion: kueue.x-k8s.io/v1beta2
 kind: ClusterQueue
@@ -67,6 +72,7 @@ spec:
         - cpu
         - memory
         - nvidia.com/gpu
+        - a100-sxm4-40gb-share
       flavors:
         - name: gpu-pool
           resources:
@@ -75,6 +81,8 @@ spec:
             - name: memory
               nominalQuota: "0Gi"
             - name: nvidia.com/gpu
+              nominalQuota: "0"
+            - name: a100-sxm4-40gb-share
               nominalQuota: "0"
 ---
 apiVersion: kueue.x-k8s.io/v1beta2
@@ -101,6 +109,7 @@ spec:
         - cpu
         - memory
         - nvidia.com/gpu
+        - a100-sxm4-40gb-share
       flavors:
         - name: gpu-pool
           resources:
@@ -109,6 +118,8 @@ spec:
             - name: memory
               nominalQuota: "0Gi"
             - name: nvidia.com/gpu
+              nominalQuota: "0"
+            - name: a100-sxm4-40gb-share
               nominalQuota: "0"
 ---
 apiVersion: infrastructure.opendatahub.io/v1
