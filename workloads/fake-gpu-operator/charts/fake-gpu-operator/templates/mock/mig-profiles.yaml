@@ -20,7 +20,7 @@ metadata:
     # chart-managed like the gpu-profile CMs (which use their own label too).
     fake-gpu-operator/mig-profiles: "true"
 data:
-  mig-profiles.yaml: |
+  config.mig.yaml: |
     version: 1
 
     # NVIDIA MIG user guide, Supported MIG Profiles, Table 12
@@ -312,7 +312,7 @@ metadata:
     # chart-managed like the gpu-profile CMs (which use their own label too).
     fake-gpu-operator/mig-profiles: "true"
 data:
-  mig-profiles.yaml: |
+  config.mig.yaml: |
     version: 1
 
     # NVIDIA MIG user guide, Supported MIG Profiles, Table 10 (H100 80GB,
@@ -625,7 +625,7 @@ metadata:
     # chart-managed like the gpu-profile CMs (which use their own label too).
     fake-gpu-operator/mig-profiles: "true"
 data:
-  mig-profiles.yaml: |
+  config.mig.yaml: |
     version: 1
 
     # NVIDIA MIG user guide, Supported MIG Profiles, Table 5 (B200). Names,
@@ -942,7 +942,7 @@ metadata:
     # chart-managed like the gpu-profile CMs (which use their own label too).
     fake-gpu-operator/mig-profiles: "true"
 data:
-  mig-profiles.yaml: |
+  config.mig.yaml: |
     version: 1
 
     # NVIDIA's MIG user guide has no GB200 table. The names come from the
