@@ -83,3 +83,21 @@ dra-driver-nvidia-gpu:
   consumableShares: "4"
   featureGates:
     ConsumableShares: true
+  kubeletPlugin:
+    # Pin the kubelet plugin to the DRA (mock-backend) pools only. Without
+    # this it schedules on every node carrying the NFD pci-10de label —
+    # including the `default` (fake-backend) pool, where nvml-mock never
+    # stages /var/lib/nvml-mock and the pod hangs in Init forever, keeping
+    # the DaemonSet (and the ArgoCD app) permanently Progressing.
+    # This REPLACES the subchart's default affinity (pci-10de) — the pool
+    # label is the more precise selector here.
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: run.ai/simulated-gpu-node-pool
+                  operator: In
+                  values:
+                    - dra-share
+                    - dra-mig

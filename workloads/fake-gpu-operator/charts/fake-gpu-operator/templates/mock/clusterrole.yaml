@@ -26,4 +26,41 @@ subjects:
   - kind: ServiceAccount
     name: nvml-mock
     namespace: {{ .Release.Namespace }}
+{{- if (.Values.environment).openshift }}
+---
+# The nvml-mock DaemonSet runs privileged containers and mounts hostPath
+# volumes (/var/lib/nvml-mock, /var/run/cdi, /run/nvidia) — the same posture
+# the device-plugin needs — so its ServiceAccount requires the privileged
+# SCC. Without this grant on OpenShift the pods fail admission with
+# "unable to validate against any security context constraint" and the DS
+# never creates pods (Current=0, Desired=N).
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: nvml-mock-scc
+  labels:
+    app.kubernetes.io/managed-by: fake-gpu-operator
+    fake-gpu-operator/component: nvml-mock
+rules:
+  - apiGroups: ["security.openshift.io"]
+    resourceNames: ["privileged"]
+    resources: ["securitycontextconstraints"]
+    verbs: ["use"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: nvml-mock-scc
+  labels:
+    app.kubernetes.io/managed-by: fake-gpu-operator
+    fake-gpu-operator/component: nvml-mock
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: nvml-mock-scc
+subjects:
+  - kind: ServiceAccount
+    name: nvml-mock
+    namespace: {{ .Release.Namespace }}
+{{- end }}
 {{- end -}}
