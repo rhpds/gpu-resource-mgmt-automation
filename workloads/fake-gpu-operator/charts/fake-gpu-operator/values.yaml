@@ -120,7 +120,8 @@ migFaker:
     repository: ghcr.io/run-ai/fake-gpu-operator/mig-faker
     tag: ""
 
-# Per-pool nvml-mock DaemonSet image (consumed by mock controller).
+# Per-pool nvml-mock DaemonSet image + launch contract (consumed by the mock
+# controller).
 nvmlMock:
   image:
     repository: ghcr.io/nvidia/nvml-mock
@@ -128,6 +129,18 @@ nvmlMock:
     # libnvidia-ml.so loading. sha-1706195 is the last green build; bump when e2e adapts to v0.2.x.
     tag: sha-1706195
     pullPolicy: IfNotPresent
+  # Container contract for the per-pool DaemonSets — MUST match the pinned
+  # image generation:
+  #   legacy (default): nvml-mock v0.1.0 — /scripts/entrypoint.sh + the
+  #     toolkit-ready marker wrapper. Use with tag sha-1706195.
+  #   mokka: nvml-mock >= v0.2 — /usr/local/bin/node-agent start (upstream's
+  #     Mokka chart contract; no entrypoint scripts, self-staging, CDI written
+  #     under /host/run/cdi). Also switches the per-pool ConfigMap to carry
+  #     the product's MIG partition table (mig-profiles-<profile>) as the
+  #     sibling file the engine resolves, making MIG-capable boards possible.
+  #     Digest-pin the image (tag: sha256:...) when using mokka — :latest
+  #     rolls and the contract could drift out from under the cluster.
+  launchContract: legacy
 
 # When true, installs upstream gpu-operator subchart. When false, renders a
 # placeholder Deployment polyfill (the ClusterPolicy CRD ships via crds/).

@@ -44,6 +44,8 @@ spec:
               # Digest pins (tag == "sha256:...") must join with "@" — a colon
               # there is an invalid image reference.
               value: "{{ (.Values.nvmlMock).image.repository | default "ghcr.io/nvidia/nvml-mock" }}{{ if (.Values.nvmlMock).image.tag | hasPrefix "sha256:" }}@{{ else }}:{{ end }}{{ (.Values.nvmlMock).image.tag | default "latest" }}"
+            - name: NVML_MOCK_LAUNCH_CONTRACT
+              value: "{{ (.Values.nvmlMock).launchContract | default "legacy" }}"
             {{- if (.Values.statusUpdater).runaiIntegration.enabled }}
             - name: RUNAI_INTEGRATION_ENABLED
               value: "true"

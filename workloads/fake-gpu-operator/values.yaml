@@ -23,103 +23,40 @@ topology:
         profile: l40s
     # DRA consumable shares (4 claims/device) — real NVIDIA DRA driver on
     # mock NVML. Label nodes into this pool to activate.
+    #
+    # The a100 builtin profile ships mig.mode: enabled, so without this
+    # override BOTH DRA pools would become MIG-capable once the
+    # mig-profiles-a100 table renders (same profile). Pool hygiene keeps
+    # shares and MIG separated: this pool is shares-only — MIG mode off here
+    # means the mock controller renders no MIG table for it.
     dra-share:
       gpu:
         backend: mock
         profile: a100
+        overrides:
+          device_defaults:
+            mig:
+              mode_current: disabled
+              mode_pending: disabled
     # Phase B: dynamic MIG via claims. Kept separate from dra-share per pool
     # hygiene (claim-driven repartitioning owns these devices).
     # Label nodes into this pool to activate.
+    #
+    # MIG capability on nvml-mock >= v0.2 (Mokka) = mode on (the a100 builtin
+    # profile already ships mode_current/mode_pending: enabled) + the board's
+    # partition table, which the mock controller renders from the chart's
+    # mig-profiles-a100 ConfigMap into the per-pool CM's mig-profiles.yaml
+    # sibling key. Only max_gpu_instances is missing from the builtin —
+    # upstream's main a100 config carries it alongside the mode flags.
+    # dra-share intentionally stays MIG-less (shares-only pool).
     dra-mig:
       gpu:
         backend: mock
         profile: a100
-        # MIG capability gate: the a100 builtin profile ships without
-        # mig.supported_profiles, so mock NVML reports a MIG-less A100 and the
-        # DRA driver publishes shares-only slices. This override (verbatim
-        # device_defaults.mig from the validated probe config,
-        # ~/.opencode/plan/a100-mig-profiles-nvml-mock.yaml) arms the
-        # claim-driven MIG engine: mode enabled + the 5 canonical A100
-        # profiles with placements. Deep-merge semantics: scalars/lists
-        # replace, nested maps merge — the profiles list lands wholesale.
-        # dra-share intentionally stays MIG-less (shares-only pool).
         overrides:
           device_defaults:
             mig:
-              mode_current: enabled
               max_gpu_instances: 7
-              supported_profiles:
-                - name: 1g.5gb
-                  nvml_profile: 1_SLICE
-                  slices: 1
-                  profile_id: 0
-                  instances: 7
-                  memory_mb: 4864
-                  multiprocessors: 14
-                  copy_engines: 1
-                  placements:
-                    - {start: 0, size: 1}
-                    - {start: 1, size: 1}
-                    - {start: 2, size: 1}
-                    - {start: 3, size: 1}
-                    - {start: 4, size: 1}
-                    - {start: 5, size: 1}
-                    - {start: 6, size: 1}
-                  compute_instances:
-                    - {nvml_profile: 1_SLICE, slices: 1, instances: 1, multiprocessors: 14, shared_copy_engines: 1}
-                - name: 2g.10gb
-                  nvml_profile: 2_SLICE
-                  slices: 2
-                  profile_id: 1
-                  instances: 3
-                  memory_mb: 9728
-                  multiprocessors: 28
-                  copy_engines: 2
-                  placements:
-                    - {start: 0, size: 2}
-                    - {start: 2, size: 2}
-                    - {start: 4, size: 2}
-                    - {start: 6, size: 2}
-                  compute_instances:
-                    - {nvml_profile: 2_SLICE, slices: 2, instances: 1, multiprocessors: 28, shared_copy_engines: 2}
-                - name: 3g.20gb
-                  nvml_profile: 3_SLICE
-                  slices: 3
-                  profile_id: 2
-                  instances: 2
-                  memory_mb: 19968
-                  multiprocessors: 42
-                  copy_engines: 3
-                  placements:
-                    - {start: 0, size: 4}
-                    - {start: 4, size: 4}
-                  compute_instances:
-                    - {nvml_profile: 3_SLICE, slices: 3, instances: 1, multiprocessors: 42, shared_copy_engines: 3}
-                - name: 4g.20gb
-                  nvml_profile: 4_SLICE
-                  slices: 4
-                  profile_id: 3
-                  instances: 1
-                  memory_mb: 19968
-                  multiprocessors: 56
-                  copy_engines: 4
-                  placements:
-                    - {start: 0, size: 4}
-                    - {start: 4, size: 4}
-                  compute_instances:
-                    - {nvml_profile: 4_SLICE, slices: 4, instances: 1, multiprocessors: 56, shared_copy_engines: 4}
-                - name: 7g.40gb
-                  nvml_profile: 7_SLICE
-                  slices: 7
-                  profile_id: 4
-                  instances: 1
-                  memory_mb: 40448
-                  multiprocessors: 98
-                  copy_engines: 7
-                  placements:
-                    - {start: 0, size: 8}
-                  compute_instances:
-                    - {nvml_profile: 7_SLICE, slices: 7, instances: 1, multiprocessors: 98, shared_copy_engines: 7}
   nodePoolLabelKey: run.ai/simulated-gpu-node-pool
   migStrategy: none
 
@@ -149,13 +86,17 @@ statusUpdater:
 # the MIG symbols, so dynamic MIG can never activate on it. Digest-pinned to
 # the build validated against the A100 MIG template (":latest" at validation
 # time, 2026-11-24) — digests are immutable so this is reproducible; bump the
-# digest when re-validating a newer upstream build. NOTE for the fork's e2e
-# harness: upstream v0.2.x changed libnvidia-ml.so loading — adapt
-# test/e2e/mock before moving the chart default off sha-1706195.
+# digest when re-validating a newer upstream build. This generation is the
+# Mokka rewrite (v0.2+): no /scripts/entrypoint.sh, node-agent launches
+# directly — which is why launchContract: mokka below is REQUIRED with it.
+# NOTE for the fork's e2e harness: upstream v0.2.x changed libnvidia-ml.so
+# loading — adapt test/e2e/mock before moving the chart default off
+# sha-1706195/legacy.
 nvmlMock:
   image:
     repository: ghcr.io/nvidia/nvml-mock
     tag: sha256:1730a101817c21a9745af75a7a1dce0b066370b24b80cd987b4fba3ae7df1042
+  launchContract: mokka
 
 statusExporter:
   enabled: true
