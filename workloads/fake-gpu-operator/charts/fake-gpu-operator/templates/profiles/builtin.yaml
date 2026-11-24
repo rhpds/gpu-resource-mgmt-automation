@@ -18,12 +18,19 @@ data:
     # =============================================================================
     # System-level configuration
     # =============================================================================
+    # Driver 580.65.06, NOT the canonical-capture 550.163.01: the Mokka bridge
+    # version-gates NVML functions by the simulated driver version, and the
+    # DRA driver 0.5.1 calls nvmlDeviceGetAddressingMode (NVML 580+) while
+    # enumerating MIG-capable devices — on a 550 profile the bridge answers
+    # FUNCTION_NOT_FOUND and the kubelet-plugin crash-loops
+    # ("error getting addressing mode for device 0"). A100 + 580/CUDA 13 is a
+    # real, supported pairing (Ampere is supported through CUDA 13).
     system:
-      driver_version: "550.163.01"
-      nvml_version: "12.550.163.01"
-      cuda_version: "12.4"
-      cuda_version_major: 12
-      cuda_version_minor: 4
+      driver_version: "580.65.06"
+      nvml_version: "13.580.65.06"
+      cuda_version: "13.0"
+      cuda_version_major: 13
+      cuda_version_minor: 0
     
     # =============================================================================
     # Default device configuration (applied to all devices unless overridden)
@@ -310,7 +317,7 @@ data:
       # ---------------------------------------------------------------------------
       gsp_firmware:
         mode: "enabled"                 # GSP enabled on newer drivers
-        version: "550.54.15"
+        version: "580.65.06"
     
       # ---------------------------------------------------------------------------
       # Processes (empty at idle)
