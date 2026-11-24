@@ -59,6 +59,15 @@ topology:
               mode_current: enabled
               mode_pending: enabled
               max_gpu_instances: 7
+              # Pre-carved partition layout: the mock stages the MIG caps
+              # infrastructure (proc capabilities files + nvidia-caps device
+              # nodes) for the BOOT-TIME layout only, and the DRA driver's
+              # claim-driven carve cannot create them for NEW placements
+              # (upstream limitation, memory filed). Declaring the layout
+              # here gives the driver real, allocatable MIG devices.
+              gpu_instances:
+                - profile: 1g.5gb
+                  count: 2
   nodePoolLabelKey: run.ai/simulated-gpu-node-pool
   migStrategy: none
 
