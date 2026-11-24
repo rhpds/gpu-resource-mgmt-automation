@@ -134,12 +134,20 @@ dra-driver-nvidia-gpu:
   consumableShares: "4"
   featureGates:
     ConsumableShares: true
-    # Claim-driven MIG carving (alpha): with this on, the kubelet plugin
-    # publishes MigDynamic devices (parent GPU + GI profile + placement) in
-    # the gpu.nvidia.com slice and carves the GI/CI at PrepareDevice time
-    # when a claim selects one; releasing the claim folds the partition back.
-    # Without it the slice only ever exposes whole-GPU (type=gpu) devices —
-    # the mig.nvidia.com DeviceClass has nothing to select.
+    # Claim-driven MIG carving (alpha): the kubelet plugin publishes
+    # MigDynamic devices (parent GPU + GI profile + placement) and carves the
+    # GI/CI at PrepareDevice time when a claim selects one; releasing the
+    # claim folds the partition back. End-to-end this requires the fork PAIR:
+    # the eformat/k8s-test-infra nvml-mock bridge stages the MIG capability
+    # surface (proc access files + mig-minors + /dev/nvidia-caps nodes +
+    # proc/devices) synchronously inside the carve, and the driver image is
+    # built from eformat/dra-driver-nvidia-gpu main (v0.6.0-dev), which honors
+    # the ALT_PROC_* envs below. The stock v0.5.1 driver ignores those envs
+    # and reads host /proc — where the staged caps never exist — and the
+    # stock mock never stages caps on carve: that combination fails at
+    # NodePrepareResources ("failed to parse GI capabilities file"), which is
+    # what drove the fork pair. (FEATURE_GATES env delivery works with the
+    # fork-main binary: the CLI layer derives env names from flag names.)
     DynamicMIG: true
   kubeletPlugin:
     # Pin the kubelet plugin to the DRA (mock-backend) pools only. Without
@@ -155,7 +163,10 @@ dra-driver-nvidia-gpu:
           # runc refuses mounts targeting /proc). The driver's own mock-node
           # mechanism: ALT_PROC_DRIVER_PATH / ALT_PROC_DEVICES_PATH point it
           # at the capability tree the nvml-mock agent stages under its
-          # driver root (this is its documented mock-node mechanism).
+          # driver root. LOAD-BEARING with the fork-main driver build (which
+          # honors them — the stock v0.5.1 binary ignores them): they are
+          # what lets claim-carved partitions reach CDI through the staged
+          # tree, including the caps the mock bridge stages on carve.
           - name: ALT_PROC_DRIVER_PATH
             value: /driver-root/proc/driver
           - name: ALT_PROC_DEVICES_PATH
