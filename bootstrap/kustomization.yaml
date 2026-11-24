@@ -5,4 +5,9 @@ resources:
 - fake-gpu-operator-app.yaml
 - gpu-rbac-app.yaml
 - gpu-booking-plugin-app.yaml
-- gpu-config-plugin-app.yaml
+# Held back until Phase C (config-plugin DRA-awareness) — the plugin's
+# Deploy flow clobbers the chart-owned topology CM (single-pool old-schema
+# replace vs the 3-pool staged topology) and it has no DRA awareness.
+# Its Kueue wiring (ResourceFlavor/Cohort/CQs/HardwareProfile) is replaced
+# by workloads/rhoai-operators/kueue-queues.yaml. Uncomment when Phase C lands.
+# - gpu-config-plugin-app.yaml

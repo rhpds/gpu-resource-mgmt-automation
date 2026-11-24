@@ -3,6 +3,7 @@ resources:
   - dsc-cr.yaml
   - dsci-cr.yaml
   - kueue-cr.yaml
+  - kueue-queues.yaml
   - odh-dashboard.yaml
   - hardware-profile.yaml
   - authorino-cr.yaml

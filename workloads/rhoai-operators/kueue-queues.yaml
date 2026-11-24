@@ -1,0 +1,138 @@
+---
+# Static replacement for the Kueue wiring the gpu-config-plugin used to
+# provision on every Deploy (pkg/kube/kueue.go). The config plugin is held
+# back until its Phase C DRA-awareness work lands (see
+# ~/.opencode/plan/fake-gpu-operator-dra-shares-mig.md), so this manifest
+# carries its borrow-model quota shape verbatim:
+#   - ClusterQueues carry ZEROED quotas; the Cohort holds the real capacity
+#     and workloads borrow from it (borrowWithinCohort in unreserved-priority).
+#   - DRA note: with deviceClassMappings in kueue-cr.yaml, ResourceClaims
+#     (gpu.nvidia.com) charge the same logical nvidia.com/gpu quota as the
+#     device-plugin pool's GPUs — one shared quota pool for both worlds.
+# Sizes are placeholders for the new cluster: set cpu/memory to
+# worker-count x per-node, and nvidia.com/gpu to the default L40S pool size.
+---
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: ResourceFlavor
+metadata:
+  name: gpu-pool
+  labels:
+    gpu-config-plugin.openshift.io/managed: "true"
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  nodeLabels:
+    run.ai/simulated-gpu-node-pool: default
+---
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: Cohort
+metadata:
+  name: unreserved
+  labels:
+    gpu-config-plugin.openshift.io/managed: "true"
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  resourceGroups:
+    - coveredResources:
+        - cpu
+        - memory
+        - nvidia.com/gpu
+      flavors:
+        - name: gpu-pool
+          resources:
+            - name: cpu
+              nominalQuota: "32" # TODO(mike): worker-count x per-node cpu
+            - name: memory
+              nominalQuota: "224Gi" # TODO(mike): worker-count x per-node memory
+            - name: nvidia.com/gpu
+              nominalQuota: "8" # default L40S pool size
+---
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: ClusterQueue
+metadata:
+  name: unreserved
+  labels:
+    gpu-config-plugin.openshift.io/managed: "true"
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  cohortName: unreserved
+  namespaceSelector: {}
+  resourceGroups:
+    - coveredResources:
+        - cpu
+        - memory
+        - nvidia.com/gpu
+      flavors:
+        - name: gpu-pool
+          resources:
+            - name: cpu
+              nominalQuota: "0"
+            - name: memory
+              nominalQuota: "0Gi"
+            - name: nvidia.com/gpu
+              nominalQuota: "0"
+---
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: ClusterQueue
+metadata:
+  name: unreserved-priority
+  labels:
+    gpu-config-plugin.openshift.io/managed: "true"
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  cohortName: unreserved
+  namespaceSelector:
+    matchLabels:
+      rhai-tmm.dev/clusterqueues: h200-priority
+  preemption:
+    borrowWithinCohort:
+      maxPriorityThreshold: 100
+      policy: LowerPriority
+    reclaimWithinCohort: LowerPriority
+  resourceGroups:
+    - coveredResources:
+        - cpu
+        - memory
+        - nvidia.com/gpu
+      flavors:
+        - name: gpu-pool
+          resources:
+            - name: cpu
+              nominalQuota: "0"
+            - name: memory
+              nominalQuota: "0Gi"
+            - name: nvidia.com/gpu
+              nominalQuota: "0"
+---
+apiVersion: infrastructure.opendatahub.io/v1
+kind: HardwareProfile
+metadata:
+  name: unreserved-gpu
+  namespace: redhat-ods-applications
+  labels:
+    gpu-config-plugin.openshift.io/managed: "true"
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    argocd.argoproj.io/sync-wave: "3"
+    opendatahub.io/disabled: "false"
+    opendatahub.io/dashboard-feature-visibility: '[]'
+  # displayName follows the config plugin's spelling: "Unreserved <GPUProduct> GPU"
+spec:
+  identifiers:
+    - displayName: Unreserved NVIDIA-L40S GPU
+      identifier: nvidia.com/gpu
+      defaultCount: 1
+      maxCount: 8
+      minCount: 1
+  scheduling:
+    type: Queue
+    kueue:
+      localQueueName: unreserved
+      priorityClass: None
