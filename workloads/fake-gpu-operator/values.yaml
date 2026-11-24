@@ -142,6 +142,11 @@ dra-driver-nvidia-gpu:
     # the mig.nvidia.com DeviceClass has nothing to select.
     DynamicMIG: true
   kubeletPlugin:
+    # Pin the kubelet plugin to the DRA (mock-backend) pools only. Without
+    # this it schedules on every node carrying the NFD pci-10de label —
+    # including the `default` (fake-backend) pool, where nvml-mock never
+    # stages /var/lib/nvml-mock and the pod hangs in Init forever, keeping
+    # the DaemonSet (and the ArgoCD app) permanently Progressing.
     containers:
       gpus:
         env:
@@ -155,12 +160,6 @@ dra-driver-nvidia-gpu:
             value: /driver-root/proc/driver
           - name: ALT_PROC_DEVICES_PATH
             value: /driver-root/proc/devices
-  kubeletPlugin:
-    # Pin the kubelet plugin to the DRA (mock-backend) pools only. Without
-    # this it schedules on every node carrying the NFD pci-10de label —
-    # including the `default` (fake-backend) pool, where nvml-mock never
-    # stages /var/lib/nvml-mock and the pod hangs in Init forever, keeping
-    # the DaemonSet (and the ArgoCD app) permanently Progressing.
     # This REPLACES the subchart's default affinity (pci-10de) — the pool
     # label is the more precise selector here.
     affinity:
