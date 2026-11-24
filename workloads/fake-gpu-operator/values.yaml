@@ -92,21 +92,20 @@ statusUpdater:
     repository: quay.io/eformat/fake-gpu-operator-status-updater
     tag: rhoai-36-dra
 
-# nvml-mock build for the DRA pools. The chart-default pin (sha-1706195)
-# predates the MIG engine entirely — probe-proven (ctypes): that build lacks
-# the MIG symbols, so dynamic MIG can never activate on it. Digest-pinned to
-# the build validated against the A100 MIG template (":latest" at validation
-# time, 2026-11-24) — digests are immutable so this is reproducible; bump the
-# digest when re-validating a newer upstream build. This generation is the
-# Mokka rewrite (v0.2+): no /scripts/entrypoint.sh, node-agent launches
-# directly — which is why launchContract: mokka below is REQUIRED with it.
-# NOTE for the fork's e2e harness: upstream v0.2.x changed libnvidia-ml.so
-# loading — adapt test/e2e/mock before moving the chart default off
-# sha-1706195/legacy.
+# nvml-mock build for the DRA pools. This is OUR fork build now (built from
+# eformat/k8s-test-infra, branch rhoai-36-dra): the Mokka generation plus the
+# caps-on-carve patch — the bridge stages the MIG capability surface (procfs
+# access files, mig-minors, /dev/nvidia-caps nodes, proc/devices entry)
+# synchronously inside nvmlDeviceCreate/Destroy{Gpu,Compute}Instance, which is
+# what lets the DRA driver's DynamicMIG flow reach CDI. Digest-pinned (the
+# status-updater joins sha256:* tags with @); bump the digest when re-building
+# from the fork. History: the chart default (sha-1706195) predates the MIG
+# engine entirely (probe-proven MIG-less); the pre-fork Mokka build was
+# sha256:1730a101…. launchContract: mokka is REQUIRED with this generation.
 nvmlMock:
   image:
-    repository: ghcr.io/nvidia/nvml-mock
-    tag: sha256:1730a101817c21a9745af75a7a1dce0b066370b24b80cd987b4fba3ae7df1042
+    repository: quay.io/eformat/nvml-mock
+    tag: sha256:5b95f69339de915595cd8f6eb2ebb5cb12f4b34630b89e56e364342ccaabeaf1
   launchContract: mokka
 
 statusExporter:
@@ -127,6 +126,18 @@ nvidiaDraDriver:
   enabled: true
 
 dra-driver-nvidia-gpu:
+  # Driver image built from eformat/dra-driver-nvidia-gpu (fork main,
+  # v0.6.0-dev, commit 535f645, stamped v0.6.0-dra-mock.0): main carries the
+  # ALT_PROC_DRIVER_PATH/ALT_PROC_DEVICES_PATH support the mock-tree CDI flow
+  # needs — the stock v0.5.1 release ignores those envs. Pinned by the
+  # workstream tag like the other fork components (the subchart's fullimage
+  # helper joins repository:tag and cannot carry a digest; the pushed digest,
+  # for traceability, is
+  # sha256:4fcb14ed6b2f0b3b49d908f309db2d1dc4ae1c3b2a5931674e9e4b99aef2cb2f).
+  image:
+    repository: quay.io/eformat/dra-driver-nvidia-gpu
+    pullPolicy: IfNotPresent
+    tag: rhoai-36-dra
   # Consumable shares: 4 claims per device (integer mode) + alpha gate on.
   # Requires k8s >= 1.36 (OCP 5) — DRAConsumableCapacity is default-on there.
   # nvidiaDriverRoot / gpuResourcesEnabledOverride / computeDomains disable
