@@ -125,6 +125,13 @@ dra-driver-nvidia-gpu:
   consumableShares: "4"
   featureGates:
     ConsumableShares: true
+    # Claim-driven MIG carving (alpha): with this on, the kubelet plugin
+    # publishes MigDynamic devices (parent GPU + GI profile + placement) in
+    # the gpu.nvidia.com slice and carves the GI/CI at PrepareDevice time
+    # when a claim selects one; releasing the claim folds the partition back.
+    # Without it the slice only ever exposes whole-GPU (type=gpu) devices —
+    # the mig.nvidia.com DeviceClass has nothing to select.
+    DynamicMIG: true
   kubeletPlugin:
     # Pin the kubelet plugin to the DRA (mock-backend) pools only. Without
     # this it schedules on every node carrying the NFD pci-10de label —
