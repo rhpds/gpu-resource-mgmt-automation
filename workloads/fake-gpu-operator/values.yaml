@@ -42,12 +42,12 @@ topology:
     # hygiene (claim-driven repartitioning owns these devices).
     # Label nodes into this pool to activate.
     #
-    # MIG capability on nvml-mock >= v0.2 (Mokka) = mode on (the a100 builtin
-    # profile already ships mode_current/mode_pending: enabled) + the board's
+    # MIG capability on nvml-mock >= v0.2 (Mokka) = mode on + the board's
     # partition table, which the mock controller renders from the chart's
     # mig-profiles-a100 ConfigMap into the per-pool CM's mig-profiles.yaml
-    # sibling key. Only max_gpu_instances is missing from the builtin —
-    # upstream's main a100 config carries it alongside the mode flags.
+    # sibling key. The a100 builtin ships the upstream-canonical MIG block
+    # (mode disabled + max_gpu_instances 7) — this override flips the mode
+    # on for THIS pool only.
     # dra-share intentionally stays MIG-less (shares-only pool).
     dra-mig:
       gpu:
@@ -56,6 +56,8 @@ topology:
         overrides:
           device_defaults:
             mig:
+              mode_current: enabled
+              mode_pending: enabled
               max_gpu_instances: 7
   nodePoolLabelKey: run.ai/simulated-gpu-node-pool
   migStrategy: none
