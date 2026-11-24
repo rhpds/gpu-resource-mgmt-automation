@@ -142,6 +142,20 @@ dra-driver-nvidia-gpu:
     # the mig.nvidia.com DeviceClass has nothing to select.
     DynamicMIG: true
   kubeletPlugin:
+    containers:
+      gpus:
+        env:
+          # The DRA driver reads MIG capability files from /proc/driver by
+          # default (host procfs — module-backed, absent on mock nodes, and
+          # runc refuses mounts targeting /proc). The driver's own mock-node
+          # mechanism: ALT_PROC_DRIVER_PATH / ALT_PROC_DEVICES_PATH point it
+          # at the capability tree the nvml-mock agent stages under its
+          # driver root (this is its documented mock-node mechanism).
+          - name: ALT_PROC_DRIVER_PATH
+            value: /driver-root/proc/driver
+          - name: ALT_PROC_DEVICES_PATH
+            value: /driver-root/proc/devices
+  kubeletPlugin:
     # Pin the kubelet plugin to the DRA (mock-backend) pools only. Without
     # this it schedules on every node carrying the NFD pci-10de label —
     # including the `default` (fake-backend) pool, where nvml-mock never
