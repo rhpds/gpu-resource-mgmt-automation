@@ -19,11 +19,6 @@ spec:
       managementState: Managed
     kserve:
       managementState: Managed
-      # modelsAsService removed for RHOAI 3.6 on OCP 5: the component is
-      # deprecated and the operator migrates it to Removed ("cannot re-enable
-      # once Removed") — re-asserting Managed here made the DSC apply fail,
-      # which blocked the whole rhoai-operators sync wave (and with it the
-      # kueue-queues in wave 3).
       nim:
         managementState: Managed
       rawDeploymentServiceConfig: Headed
