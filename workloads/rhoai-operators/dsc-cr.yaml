@@ -27,12 +27,14 @@ spec:
       defaultLocalQueueName: default
       managementState: Unmanaged
     llamastackoperator:
-      managementState: Managed
+      managementState: Removed
     mlflowoperator:
       managementState: Managed
     modelregistry:
       managementState: Managed
       registriesNamespace: rhoai-model-registries
+    ogx:
+      managementState: Managed
     ray:
       managementState: Managed
     trainer:
