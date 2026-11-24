@@ -41,6 +41,13 @@ operators:
     enabled: true
 
   # rhcl - kuadrant
+  # DISABLED on rhoai-36-dra: post-OCP-5.0.1 the redhat-operators catalog no
+  # longer carries the `dns-operator` package the rhcl stable-1.5 CSV depends
+  # on → Subscription ResolutionFailed=True → ArgoCD health Degraded → the
+  # wave-0 gate blocks the whole rhoai-operators sync (DSC, Kueue CR, the
+  # kueue-queues in waves 2/3 never applied). Kuadrant is not needed for the
+  # DRA test bed; re-enable (and resolve the dns-operator dependency) when
+  # the MaaS gateway work needs it.
   - name: rhcl-operator
     namespace:
       name: kuadrant-system
@@ -51,7 +58,7 @@ operators:
     catalog: openshift-redhat-operators #v1
     source: redhat-operators # v0
     sourceNamespace: openshift-marketplace # v0
-    enabled: true
+    enabled: false
 
   # jobset
   - name: job-set
