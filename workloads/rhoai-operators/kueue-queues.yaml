@@ -24,8 +24,13 @@ metadata:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
     argocd.argoproj.io/sync-wave: "3"
 spec:
-  nodeLabels:
-    run.ai/simulated-gpu-node-pool: default
+  # NO nodeLabels: the flavor spans ALL simulated-GPU pools (default /
+  # dra-share / dra-mig), and Kueue stamps flavor nodeLabels onto admitted
+  # pods — pinning them to one pool would either strand DRA workloads on a
+  # node with no matching slices or exclude the DRA pools entirely. Pool
+  # targeting happens through DRA device selection (DeviceClass + CEL on the
+  # claim), not node labels.
+  {}
 ---
 apiVersion: kueue.x-k8s.io/v1beta2
 kind: Cohort
