@@ -14,8 +14,11 @@ kind: ConfigMap
 metadata:
   name: mig-profiles-a100
   labels:
-    app.kubernetes.io/managed-by: fake-gpu-operator
-    fake-gpu-operator/component: nvml-mock
+    # NOT the mock controller's managed label pair (managed-by +
+    # component=nvml-mock) — the reconciler prunes anything carrying those
+    # that isn't in its desired per-pool set, and these tables are
+    # chart-managed like the gpu-profile CMs (which use their own label too).
+    fake-gpu-operator/mig-profiles: "true"
 data:
   mig-profiles.yaml: |
     version: 1
@@ -303,8 +306,11 @@ kind: ConfigMap
 metadata:
   name: mig-profiles-h100
   labels:
-    app.kubernetes.io/managed-by: fake-gpu-operator
-    fake-gpu-operator/component: nvml-mock
+    # NOT the mock controller's managed label pair (managed-by +
+    # component=nvml-mock) — the reconciler prunes anything carrying those
+    # that isn't in its desired per-pool set, and these tables are
+    # chart-managed like the gpu-profile CMs (which use their own label too).
+    fake-gpu-operator/mig-profiles: "true"
 data:
   mig-profiles.yaml: |
     version: 1
@@ -613,8 +619,11 @@ kind: ConfigMap
 metadata:
   name: mig-profiles-b200
   labels:
-    app.kubernetes.io/managed-by: fake-gpu-operator
-    fake-gpu-operator/component: nvml-mock
+    # NOT the mock controller's managed label pair (managed-by +
+    # component=nvml-mock) — the reconciler prunes anything carrying those
+    # that isn't in its desired per-pool set, and these tables are
+    # chart-managed like the gpu-profile CMs (which use their own label too).
+    fake-gpu-operator/mig-profiles: "true"
 data:
   mig-profiles.yaml: |
     version: 1
@@ -927,8 +936,11 @@ kind: ConfigMap
 metadata:
   name: mig-profiles-gb200
   labels:
-    app.kubernetes.io/managed-by: fake-gpu-operator
-    fake-gpu-operator/component: nvml-mock
+    # NOT the mock controller's managed label pair (managed-by +
+    # component=nvml-mock) — the reconciler prunes anything carrying those
+    # that isn't in its desired per-pool set, and these tables are
+    # chart-managed like the gpu-profile CMs (which use their own label too).
+    fake-gpu-operator/mig-profiles: "true"
 data:
   mig-profiles.yaml: |
     version: 1
