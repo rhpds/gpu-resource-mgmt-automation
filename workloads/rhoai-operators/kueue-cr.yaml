@@ -52,13 +52,14 @@ spec:
   logLevel: Normal
   managementState: Managed
   operatorLogLevel: Normal
-  # Feature gates the CR schema cannot carry (spec.config is schema-pruned —
-  # the CRD only models the keys above). The operator merges this verbatim
-  # over its computed manager config. Required for DRA: without
-  # KueueDRAIntegration, every workload carrying ResourceClaims is refused
-  # ("KueueDRAIntegration feature does not support use of resource claims")
-  # and no DRA booking ever admits. Red Hat-unsupported by definition —
-  # remove once the gate ships default-on in the kueue-rhel9 build.
-  unsupportedConfigOverrides:
-    featureGates:
-      KueueDRAIntegration: true
+  # GitOps gotcha (seen 2026-11-25): after edits to kueue-queues.yaml, ArgoCD
+  # syncs the ClusterQueues but leaves this Cohort's sibling `unreserved`
+  # OutOfSync — verify `kubectl get cohort unreserved` after each change and
+  # re-apply the rendered Cohort when stale.
+  #
+  # DRA quota (deviceClassMappings above) charges only ResourceClaimTemplate
+  # workloads: raw Pods referencing claims via resourceClaimName are refused
+  # by Kueue, and the quota check requires matching devices in the
+  # ResourceSlices — DynamicMIG's carve-at-claim boards therefore charge
+  # nothing until carved (whole boards charge normally). Design notes:
+  # ~/.opencode/plans/phase-c-h200-dra-booking.md (C1-C3).
