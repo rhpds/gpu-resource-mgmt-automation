@@ -1,10 +1,12 @@
 ---
 image:
   # Digest-pinned: discovery fix (flex parents → whole lane 16; +me filtered),
-  # UI flex/board-capacity caveats, and the cross-lane board-feasibility engine
+  # UI flex/board-capacity caveats, the cross-lane board-feasibility engine
   # (BoardCapacityCheck: 8 dedicated + 8 flex x 8 slices; refuses booking sets
-  # that need more boards than exist). Bump the digest when re-building.
-  tag: sha256:562bd6063c3146ca6c5c36a2ace0f226b5e16f6b50d03e2ca5aa332d96bac3df
+  # that need more boards than exist), and error-detail surfacing in the UI
+  # (refusals now explain the flex-board slice math). Bump the digest when
+  # re-building.
+  tag: sha256:820fe6b467515c2a8461c5ede5484583f4b9709681b47b44b9e72e481bec3ea2
 
 gpuDiscovery:
   enabled: true
