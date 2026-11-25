@@ -71,9 +71,15 @@ rules:
   # ResourceClaims back to their slice devices (quota names fold whole-GPU
   # shares claims and MIG claims into one resource, so the claim is the only
   # ground truth of which catalog lane a booking lands on).
+  # deviceclasses: the discovery sync applies per-profile DeviceClasses
+  # (phase C1) so claims can charge per-lane quota — create/update/patch for
+  # the idempotent apply, delete for GC of lanes that left the catalog.
   - apiGroups: ["resource.k8s.io"]
-    resources: ["resourceslices", "deviceclasses", "resourceclaims"]
+    resources: ["resourceslices", "resourceclaims"]
     verbs: ["get", "list"]
+  - apiGroups: ["resource.k8s.io"]
+    resources: ["deviceclasses"]
+    verbs: ["get", "list", "create", "update", "patch", "delete"]
   - apiGroups: ["resource.k8s.io"]
     resources: ["resourceclaimtemplates"]
     verbs: ["list", "create", "patch", "delete"]
