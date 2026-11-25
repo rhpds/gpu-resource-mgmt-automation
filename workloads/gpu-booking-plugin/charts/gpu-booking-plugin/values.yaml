@@ -3,7 +3,9 @@ replicaCount: 1
 
 image:
   repository: quay.io/eformat/gpu-booking-plugin
-  tag: latest
+  # rhoai-36-dra is the workstream tag; the app-level values override
+  # (values-gpu-booking-plugin.yaml) pins the digest.
+  tag: rhoai-36-dra
   pullPolicy: Always
 
 plugin:
