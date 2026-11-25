@@ -49,6 +49,30 @@ spec:
           deviceClassNames:
             - gpu.nvidia.com
             - mig.nvidia.com
+        # Dynamic MIG Booking per-profile lanes (decision 2026-11-25): claims
+        # referencing the per-profile class charge the per-profile quota name.
+        # The classes are created by the app's reservation sync (idempotent,
+        # labels for GC); until then these entries are inert. The folded
+        # mig.nvidia.com entry above keeps un-profiled MIG claims charging the
+        # whole lane.
+        - name: h200-mig-1g-18gb
+          deviceClassNames:
+            - mig.nvidia.com-1g-18gb
+        - name: h200-mig-1g-35gb
+          deviceClassNames:
+            - mig.nvidia.com-1g-35gb
+        - name: h200-mig-2g-35gb
+          deviceClassNames:
+            - mig.nvidia.com-2g-35gb
+        - name: h200-mig-3g-71gb
+          deviceClassNames:
+            - mig.nvidia.com-3g-71gb
+        - name: h200-mig-4g-71gb
+          deviceClassNames:
+            - mig.nvidia.com-4g-71gb
+        - name: h200-mig-7g-141gb
+          deviceClassNames:
+            - mig.nvidia.com-7g-141gb
   logLevel: Normal
   managementState: Managed
   operatorLogLevel: Normal

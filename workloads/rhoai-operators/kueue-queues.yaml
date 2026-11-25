@@ -48,6 +48,12 @@ spec:
         - cpu
         - memory
         - h200-gpu
+        - h200-mig-1g-18gb
+        - h200-mig-1g-35gb
+        - h200-mig-2g-35gb
+        - h200-mig-3g-71gb
+        - h200-mig-4g-71gb
+        - h200-mig-7g-141gb
       flavors:
         - name: gpu-pool
           resources:
@@ -55,10 +61,27 @@ spec:
               nominalQuota: "32" # TODO(mike): worker-count x per-node cpu
             - name: memory
               nominalQuota: "224Gi" # TODO(mike): worker-count x per-node memory
+            # Dynamic MIG Booking flex model (~/.opencode/plans/dynamic-mig-booking.md):
+            # 16 boards total — 8 dedicated (whole-only, no MIG surface) + 8 flex
+            # (whole XOR partitions, counter-set exclusivity at allocation).
+            # Per-lane maxima = table instances x 8 flex boards; the app's
+            # availability engine enforces the CROSS-lane board math at booking
+            # time (per-lane quotas are independent here — 16 whole + 4x 7g.141gb
+            # passes every lane but needs 20 boards).
             - name: h200-gpu
-              nominalQuota: "12" # DRA whole boards: 8 (h200-full) + 4 (h200-mixed's
-                                 # MIG-off half) — the mixed node's 4 MIG-on boards
-                                 # are carve-at-claim, not bookable whole
+              nominalQuota: "16" # all 16 parents (8 dedicated + 8 flex)
+            - name: h200-mig-1g-18gb
+              nominalQuota: "56" # 7/board x 8
+            - name: h200-mig-1g-35gb
+              nominalQuota: "32" # 4/board x 8
+            - name: h200-mig-2g-35gb
+              nominalQuota: "24" # 3/board x 8
+            - name: h200-mig-3g-71gb
+              nominalQuota: "16" # 2/board x 8
+            - name: h200-mig-4g-71gb
+              nominalQuota: "8" # 1/board x 8
+            - name: h200-mig-7g-141gb
+              nominalQuota: "8" # 1/board x 8
 ---
 apiVersion: kueue.x-k8s.io/v1beta2
 kind: ClusterQueue
@@ -77,6 +100,12 @@ spec:
         - cpu
         - memory
         - h200-gpu
+        - h200-mig-1g-18gb
+        - h200-mig-1g-35gb
+        - h200-mig-2g-35gb
+        - h200-mig-3g-71gb
+        - h200-mig-4g-71gb
+        - h200-mig-7g-141gb
       flavors:
         - name: gpu-pool
           resources:
@@ -85,6 +114,18 @@ spec:
             - name: memory
               nominalQuota: "0Gi"
             - name: h200-gpu
+              nominalQuota: "0"
+            - name: h200-mig-1g-18gb
+              nominalQuota: "0"
+            - name: h200-mig-1g-35gb
+              nominalQuota: "0"
+            - name: h200-mig-2g-35gb
+              nominalQuota: "0"
+            - name: h200-mig-3g-71gb
+              nominalQuota: "0"
+            - name: h200-mig-4g-71gb
+              nominalQuota: "0"
+            - name: h200-mig-7g-141gb
               nominalQuota: "0"
 ---
 apiVersion: kueue.x-k8s.io/v1beta2
@@ -111,6 +152,12 @@ spec:
         - cpu
         - memory
         - h200-gpu
+        - h200-mig-1g-18gb
+        - h200-mig-1g-35gb
+        - h200-mig-2g-35gb
+        - h200-mig-3g-71gb
+        - h200-mig-4g-71gb
+        - h200-mig-7g-141gb
       flavors:
         - name: gpu-pool
           resources:
@@ -119,6 +166,18 @@ spec:
             - name: memory
               nominalQuota: "0Gi"
             - name: h200-gpu
+              nominalQuota: "0"
+            - name: h200-mig-1g-18gb
+              nominalQuota: "0"
+            - name: h200-mig-1g-35gb
+              nominalQuota: "0"
+            - name: h200-mig-2g-35gb
+              nominalQuota: "0"
+            - name: h200-mig-3g-71gb
+              nominalQuota: "0"
+            - name: h200-mig-4g-71gb
+              nominalQuota: "0"
+            - name: h200-mig-7g-141gb
               nominalQuota: "0"
 ---
 apiVersion: infrastructure.opendatahub.io/v1

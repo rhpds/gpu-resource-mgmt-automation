@@ -1,9 +1,10 @@
 ---
 image:
-  # Digest-pinned: the discovery fix (flex parents classified whole — lane 16;
-  # +me menu-filtered) + UI flex/board-capacity caveats. Bump the digest when
-  # re-building from the fork.
-  tag: sha256:a4529554a0ce9fafa8e07d85d88de23d2182eca7d360e70adb33156bb57d5e05
+  # Digest-pinned: discovery fix (flex parents → whole lane 16; +me filtered),
+  # UI flex/board-capacity caveats, and the cross-lane board-feasibility engine
+  # (BoardCapacityCheck: 8 dedicated + 8 flex x 8 slices; refuses booking sets
+  # that need more boards than exist). Bump the digest when re-building.
+  tag: sha256:562bd6063c3146ca6c5c36a2ace0f226b5e16f6b50d03e2ca5aa332d96bac3df
 
 gpuDiscovery:
   enabled: true
