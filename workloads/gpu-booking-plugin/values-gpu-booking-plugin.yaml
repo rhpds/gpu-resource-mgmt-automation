@@ -1,14 +1,21 @@
 ---
 image:
-  # Digest-pinned: discovery fix (flex parents → whole lane 16; +me filtered),
-  # UI flex/board-capacity caveats, the cross-lane board-feasibility engine
-  # (BoardCapacityCheck: 8 dedicated + 8 flex x 8 slices), error-detail
-  # surfacing, and the attribution fixes: namespace requester resolution
-  # (owner label → openshift.io/requester → user- strip → ns) so booked
-  # workloads credit the booking user, + coveredUsage overlay (the UI renders
-  # a reserved slot as consumed (green) while an admitted workload runs on
-  # it). Bump the digest when re-building.
-  tag: sha256:f7900e61cfb7a303c627ce6b4d3937048bc7fa48af73ed6ed1a261b893eed640
+  # Digest-pinned. Lineage:
+  # - f7900e61: discovery fix (flex parents → whole lane 16; +me filtered),
+  #   UI flex/board-capacity caveats, the cross-lane board-feasibility engine
+  #   (BoardCapacityCheck: 8 dedicated + 8 flex x 8 slices), error-detail
+  #   surfacing, namespace requester resolution (owner label →
+  #   openshift.io/requester → user- strip → ns), coveredUsage overlay.
+  # - 5b1941e3 (commit 3724d37 "dra fixes"): reservation-drift guard
+  #   (hasBookingsForUnknownResource — never drain a CQ whose user still
+  #   holds reserved bookings for a resource type missing from the GPU
+  #   config), and coverageUser normalization on BOTH sides (backend credits
+  #   + frontend overlay match): system bookings store the namespace
+  #   (user-user1) while usage is attributed to the requester (user1) — the
+  #   trim makes them match, so reserved slots render consumed (green) while
+  #   the workload runs and the overview stops double-counting (8/16 → 4/16).
+  #   Bump the digest when re-building.
+  tag: sha256:5b1941e3a993ead323b871973dc2af40ff40faa220a45c165116dd055ab3fbdc
 
 gpuDiscovery:
   enabled: true
