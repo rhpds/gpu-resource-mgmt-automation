@@ -9,72 +9,84 @@ topology:
   # Profile-driven node pools (new schema). Nodes join a pool via the
   # run.ai/simulated-gpu-node-pool label (key configurable via nodePoolLabelKey).
   # Profiles are the built-in gpu-profile-<name> ConfigMaps shipped by the chart.
+  #
+  # H200-MIRROR (Phase C): ONLY the two DRA pools — the L40S device-plugin
+  # pool (`default`) is retired: the booking flow under test is DRA-only,
+  # and the real H200 cluster has no L40S nodes. The former L40S node goes
+  # idle (labeler still stamps it `default`; no topology entry = no fake
+  # GPUs provisioned). The nvidia.com/gpu extended-resource quota is dropped
+  # from the ClusterQueues with it.
   nodePools:
-    # Legacy device-plugin path — serves the live gpu-booking plugin unchanged.
-    # 8x NVIDIA L40S 48GB (the l40s profile's default device count).
-    # The nulls drop the chart-default pool's old-format fields (Tesla-K80
-    # demo default); with `gpu.profile` set, the profile drives everything.
-    default:
-      gpuProduct: null
-      gpuCount: null
-      gpuMemory: null
-      gpu:
-        backend: fake
-        profile: l40s
-    # DRA consumable shares (4 claims/device) — real NVIDIA DRA driver on
-    # mock NVML. Label nodes into this pool to activate.
+    # Helm map-merge keeps the chart-default `default` (L40S) pool unless a
+    # null override deletes the key — retired with the device-plugin path.
+    default: null
+    # DRA whole-GPU pool — real NVIDIA DRA driver on mock NVML. Label nodes
+    # into this pool to activate.
     #
-    # The a100 builtin profile ships mig.mode: enabled, so without this
-    # override BOTH DRA pools would become MIG-capable once the
-    # mig-profiles-a100 table renders (same profile). Pool hygiene keeps
-    # shares and MIG separated: this pool is shares-only — MIG mode off here
-    # means the mock controller renders no MIG table for it.
+    # H200-MIRROR (Phase C): this pool plays "h200-full" — 8 boards, MIG
+    # off, whole-GPU bookings. With consumableShares disabled (below) the
+    # devices publish WITHOUT shares capacity, so discovery derives the
+    # dedicated lane (h200-141gb-gpu) instead of a time-sliced shares lane.
+    #
+    # The h200 builtin profile ships mig.mode: disabled by default (same
+    # shape as a100), so no mode override is needed here — pool hygiene
+    # keeps whole and MIG-sliced boards separated per the H200 topology.
     dra-share:
       gpu:
         backend: mock
-        profile: a100
-        overrides:
-          device_defaults:
-            mig:
-              mode_current: disabled
-              mode_pending: disabled
-    # Phase B: dynamic MIG via claims. Kept separate from dra-share per pool
-    # hygiene (claim-driven repartitioning owns these devices).
-    # Label nodes into this pool to activate.
+        profile: h200
+    # H200-MIRROR (Phase C): this pool plays "h200-mixed" — 4 boards MIG off
+    # (whole, dedicated) + 4 boards MIG on (dynamic-MIG carve surface).
+    # MIG mode is a PER-BOARD switch: the h200 builtin carries the MIG-off
+    # default with the partition table attached, so this pool flips the
+    # device_defaults mode on (boards 4-7 inherit it) and the per-device
+    # overrides below flip boards 0-3 back to MIG off. The engine's
+    # mergeMIGOverride merges per-field, so the disabled boards inherit the
+    # table while only their mode flips — exactly the mixed-node shape the
+    # real H200 cluster will run.
     #
-    # MIG capability on nvml-mock >= v0.2 (Mokka) = mode on + the board's
-    # partition table, which the mock controller renders from the chart's
-    # mig-profiles-a100 ConfigMap into the per-pool CM's mig-profiles.yaml
-    # sibling key. The a100 builtin ships the upstream-canonical MIG block
-    # (mode disabled + max_gpu_instances 7) — this override flips the mode
-    # on for THIS pool only.
-    # dra-share intentionally stays MIG-less (shares-only pool).
+    # The old declared gpu_instances are gone: under DynamicMIG the driver
+    # destroys declared out-of-band instances at startup anyway (verified
+    # 2026-11-24), so carve-at-claim owns these boards entirely.
+    # Label nodes into this pool to activate.
     dra-mig:
       gpu:
         backend: mock
-        profile: a100
+        profile: h200
         overrides:
           device_defaults:
             mig:
               mode_current: enabled
               mode_pending: enabled
-              max_gpu_instances: 7
-              # Pre-carved partition layout: the mock stages the MIG caps
-              # infrastructure (proc capabilities files + nvidia-caps device
-              # nodes) for the BOOT-TIME layout only, and the DRA driver's
-              # claim-driven carve cannot create them for NEW placements
-              # (upstream limitation, memory filed). Declaring the layout
-              # here gives the driver real, allocatable MIG devices.
-              gpu_instances:
-                - profile: 1g.5gb
-                  count: 2
+          devices:
+            - index: 0
+              mig:
+                mode_current: disabled
+                mode_pending: disabled
+            - index: 1
+              mig:
+                mode_current: disabled
+                mode_pending: disabled
+            - index: 2
+              mig:
+                mode_current: disabled
+                mode_pending: disabled
+            - index: 3
+              mig:
+                mode_current: disabled
+                mode_pending: disabled
   nodePoolLabelKey: run.ai/simulated-gpu-node-pool
   migStrategy: none
 
 kwokGpuDevicePlugin:
   enabled: false
 
+# H200-MIRROR (Phase C): the device-plugin (extended-resource) path is
+# retired — the booking flow under test is DRA-only and the topology has no
+# `default` (L40S) pool. The nvidia.com/gpu quota left the ClusterQueues
+# with it. Re-enable for the legacy device-plugin path.
 devicePlugin:
+  enabled: false
   image:
     repository: quay.io/eformat/fake-gpu-operator-device-plugin
     # :rhoai-36-dra isolates this workstream from :latest consumers
@@ -138,11 +150,15 @@ dra-driver-nvidia-gpu:
     repository: quay.io/eformat/dra-driver-nvidia-gpu
     pullPolicy: IfNotPresent
     tag: rhoai-36-dra
-  # Consumable shares: 4 claims per device (integer mode) + alpha gate on.
+  # Consumable shares DISABLED for the H200 mirror (Phase C): the topology
+  # is dedicated whole boards + MIG slices — no time-sliced shares lane.
+  # Whole devices publish without shares capacity, so discovery derives the
+  # dedicated lane (…-gpu). Re-enable with a positive integer (claims per
+  # device) if a shares lane is wanted later.
   # Requires k8s >= 1.36 (OCP 5) — DRAConsumableCapacity is default-on there.
   # nvidiaDriverRoot / gpuResourcesEnabledOverride / computeDomains disable
   # come from the chart's own defaults (mock-NVML wiring).
-  consumableShares: "4"
+  consumableShares: "disabled"
   featureGates:
     ConsumableShares: true
     # Claim-driven MIG carving (alpha): the kubelet plugin publishes

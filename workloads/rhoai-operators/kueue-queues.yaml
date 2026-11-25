@@ -6,13 +6,14 @@
 # carries its borrow-model quota shape verbatim:
 #   - ClusterQueues carry ZEROED quotas; the Cohort holds the real capacity
 #     and workloads borrow from it (borrowWithinCohort in unreserved-priority).
-#   - DRA note: DRA claims (DeviceClass gpu.nvidia.com) charge the
-#     product-derived logical quota a100-sxm4-40gb-share via the
+#   - DRA note: DRA claims (DeviceClasses gpu.nvidia.com + mig.nvidia.com)
+#     charge the product-derived logical quota h200-gpu via the
 #     deviceClassMappings in kueue-cr.yaml — 1 quota unit per allocated
-#     claim/share (2 DRA nodes x 8 devices x 4 shares = 64). nvidia.com/gpu
-#     remains the device-plugin quota for the default L40S pool only.
+#     claim (H200 mirror: 2 DRA nodes, dedicated whole boards + MIG slices;
+#     the fold stays 1 claim = 1 unit until C1's per-profile classes).
 # Sizes are placeholders for the new cluster: set cpu/memory to
-# worker-count x per-node, and nvidia.com/gpu to the default L40S pool size.
+# worker-count x per-node. (nvidia.com/gpu extended-resource quota retired with
+# the L40S device-plugin pool — H200 mirror is DRA-only.)
 ---
 apiVersion: kueue.x-k8s.io/v1beta2
 kind: ResourceFlavor
@@ -24,12 +25,12 @@ metadata:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
     argocd.argoproj.io/sync-wave: "3"
 spec:
-  # NO nodeLabels: the flavor spans ALL simulated-GPU pools (default /
-  # dra-share / dra-mig), and Kueue stamps flavor nodeLabels onto admitted
-  # pods — pinning them to one pool would either strand DRA workloads on a
-  # node with no matching slices or exclude the DRA pools entirely. Pool
-  # targeting happens through DRA device selection (DeviceClass + CEL on the
-  # claim), not node labels.
+  # NO nodeLabels: the flavor spans ALL simulated-GPU pools (dra-share /
+  # dra-mig), and Kueue stamps flavor nodeLabels onto admitted pods —
+  # pinning them to one pool would either strand DRA workloads on a node
+  # with no matching slices or exclude the DRA pools entirely. Pool
+  # targeting happens through DRA device selection (DeviceClass + CEL on
+  # the claim), not node labels.
   {}
 ---
 apiVersion: kueue.x-k8s.io/v1beta2
@@ -46,8 +47,7 @@ spec:
     - coveredResources:
         - cpu
         - memory
-        - nvidia.com/gpu
-        - a100-sxm4-40gb-share
+        - h200-gpu
       flavors:
         - name: gpu-pool
           resources:
@@ -55,10 +55,8 @@ spec:
               nominalQuota: "32" # TODO(mike): worker-count x per-node cpu
             - name: memory
               nominalQuota: "224Gi" # TODO(mike): worker-count x per-node memory
-            - name: nvidia.com/gpu
-              nominalQuota: "8" # default L40S pool size
-            - name: a100-sxm4-40gb-share
-              nominalQuota: "64" # DRA shares: 2 nodes x 8 devices x 4 shares
+            - name: h200-gpu
+              nominalQuota: "16" # DRA whole boards: 2 nodes x 8 (dedicated, folded mapping)
 ---
 apiVersion: kueue.x-k8s.io/v1beta2
 kind: ClusterQueue
@@ -76,8 +74,7 @@ spec:
     - coveredResources:
         - cpu
         - memory
-        - nvidia.com/gpu
-        - a100-sxm4-40gb-share
+        - h200-gpu
       flavors:
         - name: gpu-pool
           resources:
@@ -85,9 +82,7 @@ spec:
               nominalQuota: "0"
             - name: memory
               nominalQuota: "0Gi"
-            - name: nvidia.com/gpu
-              nominalQuota: "0"
-            - name: a100-sxm4-40gb-share
+            - name: h200-gpu
               nominalQuota: "0"
 ---
 apiVersion: kueue.x-k8s.io/v1beta2
@@ -113,8 +108,7 @@ spec:
     - coveredResources:
         - cpu
         - memory
-        - nvidia.com/gpu
-        - a100-sxm4-40gb-share
+        - h200-gpu
       flavors:
         - name: gpu-pool
           resources:
@@ -122,9 +116,7 @@ spec:
               nominalQuota: "0"
             - name: memory
               nominalQuota: "0Gi"
-            - name: nvidia.com/gpu
-              nominalQuota: "0"
-            - name: a100-sxm4-40gb-share
+            - name: h200-gpu
               nominalQuota: "0"
 ---
 apiVersion: infrastructure.opendatahub.io/v1
@@ -142,10 +134,10 @@ metadata:
   # displayName follows the config plugin's spelling: "Unreserved <GPUProduct> GPU"
 spec:
   identifiers:
-    - displayName: Unreserved NVIDIA-L40S GPU
-      identifier: nvidia.com/gpu
+    - displayName: Unreserved NVIDIA-H200 GPU
+      identifier: h200-gpu
       defaultCount: 1
-      maxCount: 8
+      maxCount: 16
       minCount: 1
   scheduling:
     type: Queue

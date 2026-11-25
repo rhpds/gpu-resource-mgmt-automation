@@ -41,7 +41,11 @@ spec:
     # restart after a change.
     resources:
       deviceClassMappings:
-        - name: a100-sxm4-40gb-share
+        # H200 mirror: consumable shares are off, so whole devices publish
+        # DEDICATED — the folded mapping targets the dedicated lane name
+        # discovery derives (…-gpu). Per-profile classes replace this fold
+        # in C1.
+        - name: h200-gpu
           deviceClassNames:
             - gpu.nvidia.com
             - mig.nvidia.com
