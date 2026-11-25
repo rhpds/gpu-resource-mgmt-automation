@@ -58,23 +58,12 @@ topology:
             mig:
               mode_current: enabled
               mode_pending: enabled
-          devices:
-            - index: 0
-              mig:
-                mode_current: disabled
-                mode_pending: disabled
-            - index: 1
-              mig:
-                mode_current: disabled
-                mode_pending: disabled
-            - index: 2
-              mig:
-                mode_current: disabled
-                mode_pending: disabled
-            - index: 3
-              mig:
-                mode_current: disabled
-                mode_pending: disabled
+          # Dynamic MIG Booking (see ~/.opencode/plans/dynamic-mig-booking.md):
+          # ALL 8 flex boards expose the MIG surface — no per-device MIG-off
+          # overrides. The pool boundary is the carve cap (8): the dedicated
+          # pool declares no MIG surface at all. A flex board serves whole
+          # (parent consumes the board's full CounterSet) or partitions,
+          # never both.
   nodePoolLabelKey: run.ai/simulated-gpu-node-pool
   migStrategy: none
 
