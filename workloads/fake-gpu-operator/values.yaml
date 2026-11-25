@@ -116,10 +116,17 @@ statusUpdater:
 # (DeviceGpuInstanceReportedProfileID / ProfileEnum via migStateOf) ALSO gated
 # on the current mode — fixed to capability semantics. Verified by probe:
 # mode-off boards serve the full H200 profile table.
+# sha256:8381d3c2… agent stages/relabels the WHOLE staging root
+# container_file_t (Stage + Apply): the staged tree inherits the agent
+# volume's container_var_lib_t, which restricted CDI pods cannot open —
+# every in-container nvidia-smi/libnvml/lsmod access answered EACCES.
+# Root-recursion covers the CDI-mounted sys/{devices,bus,module} tree and
+# usr/local/bin/lsmod (CDI audit 2026-11-25). UNCOMMITTED agent change —
+# commit k8s-test-infra first.
 nvmlMock:
   image:
     repository: quay.io/eformat/nvml-mock
-    tag: sha256:ff6b632f376eab366c874aad9d4d6e1a5123c65964c7a7e786ace290e4b13fda
+    tag: sha256:8381d3c2d6de6c8cd123f9326f984e90c714a54f2bc69acc564a3c5731a052db
   launchContract: mokka
 
 statusExporter:
