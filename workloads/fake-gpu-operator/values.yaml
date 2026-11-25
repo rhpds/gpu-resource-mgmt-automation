@@ -106,10 +106,16 @@ statusUpdater:
 # from the fork. History: the chart default (sha-1706195) predates the MIG
 # engine entirely (probe-proven MIG-less); the pre-fork Mokka build was
 # sha256:1730a101…. launchContract: mokka is REQUIRED with this generation.
+# sha256:275479aa… was the first fork build with the MIG engine.
+# sha256:1430f8ed… serves MIG profile GEOMETRY from the capability surface
+# regardless of current mode — whole-GPU claims flip boards' mode off
+# (persisted in overrides.yaml), and the mode-gated geometry made every driver
+# restart after one enumerate 0 MIG devices (the booking-drain cascade root
+# cause, 2026-11-25).
 nvmlMock:
   image:
     repository: quay.io/eformat/nvml-mock
-    tag: sha256:275479aa865a06b543d7860afaa499bde35dee9e94995a34248943c2bfc098f4
+    tag: sha256:1430f8ed99ab3ca90899ff1e6fb178e7094c861f485e09bee335e60a52c9c15e
   launchContract: mokka
 
 statusExporter:
