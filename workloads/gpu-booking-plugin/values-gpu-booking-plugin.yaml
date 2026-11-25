@@ -2,11 +2,13 @@
 image:
   # Digest-pinned: discovery fix (flex parents → whole lane 16; +me filtered),
   # UI flex/board-capacity caveats, the cross-lane board-feasibility engine
-  # (BoardCapacityCheck: 8 dedicated + 8 flex x 8 slices; refuses booking sets
-  # that need more boards than exist), and error-detail surfacing in the UI
-  # (refusals now explain the flex-board slice math). Bump the digest when
-  # re-building.
-  tag: sha256:820fe6b467515c2a8461c5ede5484583f4b9709681b47b44b9e72e481bec3ea2
+  # (BoardCapacityCheck: 8 dedicated + 8 flex x 8 slices), error-detail
+  # surfacing, and the attribution fixes: namespace requester resolution
+  # (owner label → openshift.io/requester → user- strip → ns) so booked
+  # workloads credit the booking user, + coveredUsage overlay (the UI renders
+  # a reserved slot as consumed (green) while an admitted workload runs on
+  # it). Bump the digest when re-building.
+  tag: sha256:f7900e61cfb7a303c627ce6b4d3937048bc7fa48af73ed6ed1a261b893eed640
 
 gpuDiscovery:
   enabled: true
