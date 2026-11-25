@@ -56,7 +56,9 @@ spec:
             - name: memory
               nominalQuota: "224Gi" # TODO(mike): worker-count x per-node memory
             - name: h200-gpu
-              nominalQuota: "16" # DRA whole boards: 2 nodes x 8 (dedicated, folded mapping)
+              nominalQuota: "12" # DRA whole boards: 8 (h200-full) + 4 (h200-mixed's
+                                 # MIG-off half) — the mixed node's 4 MIG-on boards
+                                 # are carve-at-claim, not bookable whole
 ---
 apiVersion: kueue.x-k8s.io/v1beta2
 kind: ClusterQueue
@@ -137,7 +139,7 @@ spec:
     - displayName: Unreserved NVIDIA-H200 GPU
       identifier: h200-gpu
       defaultCount: 1
-      maxCount: 16
+      maxCount: 12
       minCount: 1
   scheduling:
     type: Queue

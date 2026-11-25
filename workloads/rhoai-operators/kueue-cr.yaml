@@ -52,3 +52,13 @@ spec:
   logLevel: Normal
   managementState: Managed
   operatorLogLevel: Normal
+  # Feature gates the CR schema cannot carry (spec.config is schema-pruned —
+  # the CRD only models the keys above). The operator merges this verbatim
+  # over its computed manager config. Required for DRA: without
+  # KueueDRAIntegration, every workload carrying ResourceClaims is refused
+  # ("KueueDRAIntegration feature does not support use of resource claims")
+  # and no DRA booking ever admits. Red Hat-unsupported by definition —
+  # remove once the gate ships default-on in the kueue-rhel9 build.
+  unsupportedConfigOverrides:
+    featureGates:
+      KueueDRAIntegration: true
