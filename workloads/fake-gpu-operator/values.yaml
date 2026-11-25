@@ -140,7 +140,10 @@ dra-driver-nvidia-gpu:
   # sha256:4fcb14ed6b2f0b3b49d908f309db2d1dc4ae1c3b2a5931674e9e4b99aef2cb2f).
   image:
     repository: quay.io/eformat/dra-driver-nvidia-gpu
-    pullPolicy: IfNotPresent
+    # Always: the workstream tag is re-built from the fork (same tag, new
+    # digest) — IfNotPresent would keep nodes on a stale digest across
+    # restarts.
+    pullPolicy: Always
     tag: rhoai-36-dra
   # Consumable shares DISABLED for the H200 mirror (Phase C): the topology
   # is dedicated whole boards + MIG slices — no time-sliced shares lane.
