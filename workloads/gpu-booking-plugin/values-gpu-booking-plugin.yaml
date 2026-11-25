@@ -1,6 +1,9 @@
 ---
 image:
-  tag: rhoai-36-dra
+  # Digest-pinned: the discovery fix (flex parents classified whole — lane 16;
+  # +me menu-filtered) + UI flex/board-capacity caveats. Bump the digest when
+  # re-building from the fork.
+  tag: sha256:a4529554a0ce9fafa8e07d85d88de23d2182eca7d360e70adb33156bb57d5e05
 
 gpuDiscovery:
   enabled: true
