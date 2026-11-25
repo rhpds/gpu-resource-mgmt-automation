@@ -14,8 +14,15 @@ image:
   #   (user-user1) while usage is attributed to the requester (user1) — the
   #   trim makes them match, so reserved slots render consumed (green) while
   #   the workload runs and the overview stops double-counting (8/16 → 4/16).
+  # - 0bf8a9f5 (C1, phase-c-h200-dra-booking.md): discovery sync provisions
+  #   per-profile DeviceClasses (mig.nvidia.com-<dashed profile>, CEL
+  #   driver/type/profile, managed-label GC, drift-guarded) and
+  #   GPUResourceSpec carries the dotted Profile; chart RBAC grants
+  #   deviceclasses create/update/patch/delete. Claims referencing the
+  #   per-profile class charge the per-lane quota (kueue-cr.yaml mappings
+  #   activate; folded mig.nvidia.com→h200-gpu stays as the fallback).
   #   Bump the digest when re-building.
-  tag: sha256:5b1941e3a993ead323b871973dc2af40ff40faa220a45c165116dd055ab3fbdc
+  tag: sha256:0bf8a9f5ffefb30b3037be8e2ff4b3b6a5ff32bb43a22e5f81c104a8f6f879ea
 
 gpuDiscovery:
   enabled: true
