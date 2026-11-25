@@ -38,8 +38,15 @@ image:
   #   admissionChecks:[booker] when BOOKER_ENFORCER_ENABLED; unreserved-lane
   #   workloads untouched. FIRST ENABLEMENT EVICTS already-admitted
   #   uncovered workloads — rebook before syncing or expect the eviction.
+  # - 755a538a (W4b hardening): the enforcer marks its AdmissionCheck ACTIVE
+  #   (custom checks' Active condition is the controller's job — Kueue
+  #   refuses to admit workloads referencing an inactive check), an RCT
+  #   resolution failure skips the whole workload (partial charges would
+  #   under-count), and state patches compare messages too (the patch is
+  #   what forces Kueue to evict stale admitted workloads). Also needs the
+  #   chart RBAC: get on resourceclaimtemplates + workloads/status.
   #   Bump the digest when re-building.
-  tag: sha256:b448e7046bcea9a28dad67f835e21b9643eaa529399a4ff3ecf761526c43bb93
+  tag: sha256:755a538a7ee129e86743d58e071a40c1f55b33d06faf2e99545a295491b2394b
 
 gpuDiscovery:
   enabled: true
