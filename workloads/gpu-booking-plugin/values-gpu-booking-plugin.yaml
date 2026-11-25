@@ -21,8 +21,25 @@ image:
   #   deviceclasses create/update/patch/delete. Claims referencing the
   #   per-profile class charge the per-lane quota (kueue-cr.yaml mappings
   #   activate; folded mig.nvidia.com→h200-gpu stays as the fallback).
+  # - 21459e1d: booking feasibility counts source='reserved' only — live
+  #   uncovered usage (consumed rows) is evictable, not a reservation, and
+  #   must not veto a booking (unbooked stale usage made a feasible 15-GPU
+  #   booking refuse with board_capacity_exceeded). Phase-C semantics:
+  #   bookings compete with bookings; make-room eviction is W4b.
+  # - 21459e1d: booking feasibility counts source='reserved' only — live
+  #   uncovered usage (consumed rows) is evictable, not a reservation, and
+  #   must not veto a booking (unbooked stale usage made a feasible 15-GPU
+  #   booking refuse with board_capacity_exceeded). Phase-C semantics:
+  #   bookings compete with bookings; make-room eviction is W4b.
+  # - b448e704 (W4b): the "booker" AdmissionCheck — reserved-lane workloads
+  #   must have their DRA lane charges covered by ACTIVE bookings; uncovered
+  #   workloads stay gated, admitted ones are evicted when coverage lapses
+  #   (expiry eviction + make-room preemption are the same flip). CQs gain
+  #   admissionChecks:[booker] when BOOKER_ENFORCER_ENABLED; unreserved-lane
+  #   workloads untouched. FIRST ENABLEMENT EVICTS already-admitted
+  #   uncovered workloads — rebook before syncing or expect the eviction.
   #   Bump the digest when re-building.
-  tag: sha256:0bf8a9f5ffefb30b3037be8e2ff4b3b6a5ff32bb43a22e5f81c104a8f6f879ea
+  tag: sha256:b448e7046bcea9a28dad67f835e21b9643eaa529399a4ff3ecf761526c43bb93
 
 gpuDiscovery:
   enabled: true

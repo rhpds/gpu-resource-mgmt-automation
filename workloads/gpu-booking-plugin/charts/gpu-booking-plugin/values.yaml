@@ -52,6 +52,15 @@ gpuDiscovery:
   enabled: true
   intervalSeconds: 300
 
+# Booker enforcement (phase-C W4b): a Kueue AdmissionCheck ("booker") gates
+# reserved-lane workloads on active bookings — uncovered workloads stay gated
+# and admitted ones are evicted when their coverage lapses (expiry eviction
+# and make-room preemption are the same flip). Flip enforcerEnabled to false
+# to disable cluster-wide; the next sync rebuilds CQs without the check.
+booker:
+  enforcerEnabled: true
+  intervalSeconds: 30
+
 gpuConfig:
   resources:
     - name: "H200 Full GPU"

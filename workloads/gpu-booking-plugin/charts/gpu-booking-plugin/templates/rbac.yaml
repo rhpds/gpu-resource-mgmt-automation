@@ -80,6 +80,19 @@ rules:
   - apiGroups: ["resource.k8s.io"]
     resources: ["deviceclasses"]
     verbs: ["get", "list", "create", "update", "patch", "delete"]
+  # Booker enforcement (phase-C W4b): the plugin reconciles the "booker"
+  # AdmissionCheck state on reserved-lane workloads — patch workloads and
+  # their /status subresource to gate uncovered workloads and let Kueue evict
+  # admitted ones when coverage lapses; admissionchecks for the check object.
+  - apiGroups: ["kueue.x-k8s.io"]
+    resources: ["workloads"]
+    verbs: ["list", "get", "patch", "update"]
+  - apiGroups: ["kueue.x-k8s.io"]
+    resources: ["workloads/status"]
+    verbs: ["get", "patch", "update"]
+  - apiGroups: ["kueue.x-k8s.io"]
+    resources: ["admissionchecks"]
+    verbs: ["get", "list", "create", "patch"]
   - apiGroups: ["resource.k8s.io"]
     resources: ["resourceclaimtemplates"]
     verbs: ["list", "create", "patch", "delete"]
