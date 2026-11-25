@@ -102,7 +102,10 @@ migFaker:
 statusUpdater:
   image:
     repository: quay.io/eformat/fake-gpu-operator-status-updater
-    tag: rhoai-36-dra
+    # Digest-pinned: the Merge fix (per-device overrides patch `devices` by
+    # index instead of replacing the list) that makes the mixed-node topology
+    # render — bump the digest when re-building from the fork.
+    tag: sha256:e5f0bdf5ada7ef1cec521d9fc5dc25e478d96627000b10c8ada566ec4c2605af
 
 # nvml-mock build for the DRA pools. This is OUR fork build now (built from
 # eformat/k8s-test-infra, branch rhoai-36-dra): the Mokka generation plus the

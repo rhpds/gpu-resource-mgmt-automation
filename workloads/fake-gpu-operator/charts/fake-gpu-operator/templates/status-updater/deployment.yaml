@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: status-updater
-          image: "{{ (.Values.statusUpdater).image.repository }}:{{ (.Values.statusUpdater).image.tag | default .Chart.AppVersion }}"
+          image: "{{ (.Values.statusUpdater).image.repository }}{{ if (.Values.statusUpdater).image.tag | hasPrefix "sha256:" }}@{{ else }}:{{ end }}{{ (.Values.statusUpdater).image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: "{{ (.Values.statusUpdater).image.pullPolicy }}"
           resources:
             {{- toYaml (.Values.statusUpdater).resources | nindent 12 }}
