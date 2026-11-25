@@ -117,7 +117,7 @@ statusUpdater:
 nvmlMock:
   image:
     repository: quay.io/eformat/nvml-mock
-    tag: sha256:5b95f69339de915595cd8f6eb2ebb5cb12f4b34630b89e56e364342ccaabeaf1
+    tag: sha256:275479aa865a06b543d7860afaa499bde35dee9e94995a34248943c2bfc098f4
   launchContract: mokka
 
 statusExporter:
