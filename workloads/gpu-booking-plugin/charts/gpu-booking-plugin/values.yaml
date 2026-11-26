@@ -61,6 +61,13 @@ booker:
   enforcerEnabled: true
   intervalSeconds: 30
 
+# DRA lane-name scheme: "product" (default — ocp5-3 convention, product-
+# derived names) or "profile" (the dynamic fake-GPU lab — the static Kueue
+# layer speaks PROFILE, never product: fold `gpu` + `mig-<profile>` lanes
+# pre-provisioned by gpu-resource-mgmt-automation hack/generate-kueue-agnostic.py,
+# so product swaps via the gpu-config-plugin never touch Kueue).
+draQuotaNaming: product
+
 gpuConfig:
   resources:
     - name: "H200 Full GPU"

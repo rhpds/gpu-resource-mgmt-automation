@@ -93,8 +93,22 @@ image:
   #   carve booking evicted the younger 8-board pod (FIFO kept the older),
   #   replacement race-deposed; cancel the booking → reactivated → runs.
   #   Regression: TestReactivationTargets. Bump the digest when re-building.
-  tag: sha256:455c5caadcee5c7ecb2768d1ffdc1a8cec6f61fcca2635fcd09351fed83d89dd
+  # - f8141175 (2026-11-26, agnostic quota matrix): DRA_QUOTA_NAMING env gate
+  #   ("product" default = ocp5-3 behavior unchanged; "profile" = dynamic-lab
+  #   fold `gpu` + mig-<profile> lanes matching the generated kueue-cr
+  #   deviceClassMappings), media-extension variant filter (profile mode
+  #   only — ocp5-3's A100 surface keeps its +me lanes), migDeviceClassName
+  #   sanitize guard, insecure-skip-tls-verify honored in the kubeconfig
+  #   path, RESERVATION_SYNC_ENABLED dry-run gate. Tests: TestDRAQuotaNaming_
+  #   Modes, TestParseDRASlices_MediaVariantsFiltered, TestMigDeviceClassName_
+  #   Sanitized; full suite green. Cutover: operand restart AFTER this roll's
+  #   kueue-cr lands (mappings are startup-read).
+  tag: sha256:f8141175525aac5c0617146d7e132977b9c147f3616f16d9f67593b1f6103330
 
 gpuDiscovery:
   enabled: true
   intervalSeconds: 300
+
+# Profile-mode lane naming (dynamic lab): the fold `gpu` + mig-<profile>
+# lanes, matching the generated deviceClassMappings in kueue-cr.yaml.
+draQuotaNaming: profile
