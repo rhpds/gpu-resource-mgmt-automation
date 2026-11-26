@@ -20,7 +20,15 @@ image:
   #   DeployModal warning as the confirm gate; unlocks stale-label nodes
   #   like the retired L40S `default`), and the MIG board grid retitled
   #   (checked = MIG-capable; the old title said the opposite).
-  tag: sha256:4df7742a76c6bcab99fa219188b903175b42f8d009f6cbac72f7342fdc3a9f69
+  # - 69ec4bec: topology self-heal — a 30s reconcile re-merges the persisted
+  #   v2 deploy's pools into the topology CM whenever an EXPLICIT ArgoCD
+  #   sync flattens it (ignoreDifferences protects selfHeal only; the whole
+  #   topology doc is one data key, so syncs apply wholesale — live finding
+  #   2026-11-26: the driver-affinity sync wiped the runtime h100 pool and
+  #   the status-updater pruned its mock DS). Convergent ownership: chart
+  #   heals the baseline, the plugin heals its marker pools, status-updater
+  #   rebuilds the mock chain from the restored CM (event-driven).
+  tag: sha256:69ec4bec9f11f1328d0b2e5c79a8123499a2c2abfc13677e3bd07113cae05700
   pullPolicy: Always
 
 plugin:
