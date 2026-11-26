@@ -7,10 +7,12 @@
 #   - ClusterQueues carry ZEROED quotas; the Cohort holds the real capacity
 #     and workloads borrow from it (borrowWithinCohort in unreserved-priority).
 #   - DRA note: DRA claims (DeviceClasses gpu.nvidia.com + mig.nvidia.com)
-#     charge the product-derived logical quota h200-gpu via the
-#     deviceClassMappings in kueue-cr.yaml — 1 quota unit per allocated
-#     claim (H200 mirror: 2 DRA nodes, dedicated whole boards + MIG slices;
-#     the fold stays 1 claim = 1 unit until C1's per-profile classes).
+#     charge the PRODUCT-AGNOSTIC fold quota `gpu` (MIG: per-profile lanes
+#     `mig-<profile>`) via the generated deviceClassMappings in kueue-cr.yaml
+#     — 1 quota unit per allocated claim. The static layer speaks PROFILE,
+#     never product, so product swaps via the gpu-config-plugin never touch
+#     this file or the operand (hack/generate-kueue-agnostic.py, 2026-11-26;
+#     the booking app runs DRA_QUOTA_NAMING=profile to match).
 # Sizes are placeholders for the new cluster: set cpu/memory to
 # worker-count x per-node. (nvidia.com/gpu extended-resource quota retired with
 # the L40S device-plugin pool — H200 mirror is DRA-only.)
@@ -47,13 +49,43 @@ spec:
     - coveredResources:
         - cpu
         - memory
-        - h200-gpu
-        - h200-mig-1g-18gb
-        - h200-mig-1g-35gb
-        - h200-mig-2g-35gb
-        - h200-mig-3g-71gb
-        - h200-mig-4g-71gb
-        - h200-mig-7g-141gb
+        - gpu
+        - 1g-10gb
+        - 1g-18gb
+        - 1g-20gb
+        - 1g-23gb
+        - 1g-35gb
+        - 1g-45gb
+        - 1g-47gb
+        - 1g-5gb
+        - 1g-70gb
+        - 2g-10gb
+        - 2g-20gb
+        - 2g-35gb
+        - 2g-45gb
+        - 2g-47gb
+        - 2g-70gb
+        - 3g-139gb
+        - 3g-140gb
+        - 3g-20gb
+        - 3g-40gb
+        - 3g-71gb
+        - 3g-90gb
+        - 3g-93gb
+        - 4g-139gb
+        - 4g-140gb
+        - 4g-20gb
+        - 4g-40gb
+        - 4g-71gb
+        - 4g-90gb
+        - 4g-93gb
+        - 7g-141gb
+        - 7g-180gb
+        - 7g-186gb
+        - 7g-278gb
+        - 7g-280gb
+        - 7g-40gb
+        - 7g-80gb
       flavors:
         - name: gpu-pool
           resources:
@@ -68,20 +100,86 @@ spec:
             # availability engine enforces the CROSS-lane board math at booking
             # time (per-lane quotas are independent here — 16 whole + 4x 7g.141gb
             # passes every lane but needs 20 boards).
-            - name: h200-gpu
-              nominalQuota: "16" # all 16 parents (8 dedicated + 8 flex)
-            - name: h200-mig-1g-18gb
-              nominalQuota: "56" # 7/board x 8
-            - name: h200-mig-1g-35gb
-              nominalQuota: "32" # 4/board x 8
-            - name: h200-mig-2g-35gb
-              nominalQuota: "24" # 3/board x 8
-            - name: h200-mig-3g-71gb
-              nominalQuota: "16" # 2/board x 8
-            - name: h200-mig-4g-71gb
-              nominalQuota: "8" # 1/board x 8
-            - name: h200-mig-7g-141gb
-              nominalQuota: "8" # 1/board x 8
+            # Product-agnostic bootstrap — the fold `gpu` carries the
+            # CURRENT world's whole-board capacity (2026-11-26: 3 nodes x 8
+            # H100 = 24). The booking app's applyCohortRemaining rewrites the
+            # whole block from the live catalog minus reservations every
+            # pass, so these statics are initial state only. Inactive
+            # products' mig-* lanes stay zeroed and never borrow.
+            - name: gpu
+              nominalQuota: "24" # bootstrap: 3 x 8 whole (app-owned after first sync)
+            - name: 1g-10gb
+              nominalQuota: "0"
+            - name: 1g-18gb
+              nominalQuota: "0"
+            - name: 1g-20gb
+              nominalQuota: "0"
+            - name: 1g-23gb
+              nominalQuota: "0"
+            - name: 1g-35gb
+              nominalQuota: "0"
+            - name: 1g-45gb
+              nominalQuota: "0"
+            - name: 1g-47gb
+              nominalQuota: "0"
+            - name: 1g-5gb
+              nominalQuota: "0"
+            - name: 1g-70gb
+              nominalQuota: "0"
+            - name: 2g-10gb
+              nominalQuota: "0"
+            - name: 2g-20gb
+              nominalQuota: "0"
+            - name: 2g-35gb
+              nominalQuota: "0"
+            - name: 2g-45gb
+              nominalQuota: "0"
+            - name: 2g-47gb
+              nominalQuota: "0"
+            - name: 2g-70gb
+              nominalQuota: "0"
+            - name: 3g-139gb
+              nominalQuota: "0"
+            - name: 3g-140gb
+              nominalQuota: "0"
+            - name: 3g-20gb
+              nominalQuota: "0"
+            - name: 3g-40gb
+              nominalQuota: "0"
+            - name: 3g-71gb
+              nominalQuota: "0"
+            - name: 3g-90gb
+              nominalQuota: "0"
+            - name: 3g-93gb
+              nominalQuota: "0"
+            - name: 4g-139gb
+              nominalQuota: "0"
+            - name: 4g-140gb
+              nominalQuota: "0"
+            - name: 4g-20gb
+              nominalQuota: "0"
+            - name: 4g-40gb
+              nominalQuota: "0"
+            - name: 4g-71gb
+              nominalQuota: "0"
+            - name: 4g-90gb
+              nominalQuota: "0"
+            - name: 4g-93gb
+              nominalQuota: "0"
+            - name: 7g-141gb
+              nominalQuota: "0"
+            - name: 7g-180gb
+              nominalQuota: "0"
+            - name: 7g-186gb
+              nominalQuota: "0"
+            - name: 7g-278gb
+              nominalQuota: "0"
+            - name: 7g-280gb
+              nominalQuota: "0"
+            - name: 7g-40gb
+              nominalQuota: "0"
+            - name: 7g-80gb
+              nominalQuota: "0"
 ---
 apiVersion: kueue.x-k8s.io/v1beta2
 kind: ClusterQueue
@@ -109,13 +207,43 @@ spec:
     - coveredResources:
         - cpu
         - memory
-        - h200-gpu
-        - h200-mig-1g-18gb
-        - h200-mig-1g-35gb
-        - h200-mig-2g-35gb
-        - h200-mig-3g-71gb
-        - h200-mig-4g-71gb
-        - h200-mig-7g-141gb
+        - gpu
+        - 1g-10gb
+        - 1g-18gb
+        - 1g-20gb
+        - 1g-23gb
+        - 1g-35gb
+        - 1g-45gb
+        - 1g-47gb
+        - 1g-5gb
+        - 1g-70gb
+        - 2g-10gb
+        - 2g-20gb
+        - 2g-35gb
+        - 2g-45gb
+        - 2g-47gb
+        - 2g-70gb
+        - 3g-139gb
+        - 3g-140gb
+        - 3g-20gb
+        - 3g-40gb
+        - 3g-71gb
+        - 3g-90gb
+        - 3g-93gb
+        - 4g-139gb
+        - 4g-140gb
+        - 4g-20gb
+        - 4g-40gb
+        - 4g-71gb
+        - 4g-90gb
+        - 4g-93gb
+        - 7g-141gb
+        - 7g-180gb
+        - 7g-186gb
+        - 7g-278gb
+        - 7g-280gb
+        - 7g-40gb
+        - 7g-80gb
       flavors:
         - name: gpu-pool
           resources:
@@ -123,19 +251,79 @@ spec:
               nominalQuota: "0"
             - name: memory
               nominalQuota: "0Gi"
-            - name: h200-gpu
+            - name: gpu
               nominalQuota: "0"
-            - name: h200-mig-1g-18gb
+            - name: 1g-10gb
               nominalQuota: "0"
-            - name: h200-mig-1g-35gb
+            - name: 1g-18gb
               nominalQuota: "0"
-            - name: h200-mig-2g-35gb
+            - name: 1g-20gb
               nominalQuota: "0"
-            - name: h200-mig-3g-71gb
+            - name: 1g-23gb
               nominalQuota: "0"
-            - name: h200-mig-4g-71gb
+            - name: 1g-35gb
               nominalQuota: "0"
-            - name: h200-mig-7g-141gb
+            - name: 1g-45gb
+              nominalQuota: "0"
+            - name: 1g-47gb
+              nominalQuota: "0"
+            - name: 1g-5gb
+              nominalQuota: "0"
+            - name: 1g-70gb
+              nominalQuota: "0"
+            - name: 2g-10gb
+              nominalQuota: "0"
+            - name: 2g-20gb
+              nominalQuota: "0"
+            - name: 2g-35gb
+              nominalQuota: "0"
+            - name: 2g-45gb
+              nominalQuota: "0"
+            - name: 2g-47gb
+              nominalQuota: "0"
+            - name: 2g-70gb
+              nominalQuota: "0"
+            - name: 3g-139gb
+              nominalQuota: "0"
+            - name: 3g-140gb
+              nominalQuota: "0"
+            - name: 3g-20gb
+              nominalQuota: "0"
+            - name: 3g-40gb
+              nominalQuota: "0"
+            - name: 3g-71gb
+              nominalQuota: "0"
+            - name: 3g-90gb
+              nominalQuota: "0"
+            - name: 3g-93gb
+              nominalQuota: "0"
+            - name: 4g-139gb
+              nominalQuota: "0"
+            - name: 4g-140gb
+              nominalQuota: "0"
+            - name: 4g-20gb
+              nominalQuota: "0"
+            - name: 4g-40gb
+              nominalQuota: "0"
+            - name: 4g-71gb
+              nominalQuota: "0"
+            - name: 4g-90gb
+              nominalQuota: "0"
+            - name: 4g-93gb
+              nominalQuota: "0"
+            - name: 7g-141gb
+              nominalQuota: "0"
+            - name: 7g-180gb
+              nominalQuota: "0"
+            - name: 7g-186gb
+              nominalQuota: "0"
+            - name: 7g-278gb
+              nominalQuota: "0"
+            - name: 7g-280gb
+              nominalQuota: "0"
+            - name: 7g-40gb
+              nominalQuota: "0"
+            - name: 7g-80gb
               nominalQuota: "0"
 ---
 apiVersion: kueue.x-k8s.io/v1beta2
@@ -161,13 +349,43 @@ spec:
     - coveredResources:
         - cpu
         - memory
-        - h200-gpu
-        - h200-mig-1g-18gb
-        - h200-mig-1g-35gb
-        - h200-mig-2g-35gb
-        - h200-mig-3g-71gb
-        - h200-mig-4g-71gb
-        - h200-mig-7g-141gb
+        - gpu
+        - 1g-10gb
+        - 1g-18gb
+        - 1g-20gb
+        - 1g-23gb
+        - 1g-35gb
+        - 1g-45gb
+        - 1g-47gb
+        - 1g-5gb
+        - 1g-70gb
+        - 2g-10gb
+        - 2g-20gb
+        - 2g-35gb
+        - 2g-45gb
+        - 2g-47gb
+        - 2g-70gb
+        - 3g-139gb
+        - 3g-140gb
+        - 3g-20gb
+        - 3g-40gb
+        - 3g-71gb
+        - 3g-90gb
+        - 3g-93gb
+        - 4g-139gb
+        - 4g-140gb
+        - 4g-20gb
+        - 4g-40gb
+        - 4g-71gb
+        - 4g-90gb
+        - 4g-93gb
+        - 7g-141gb
+        - 7g-180gb
+        - 7g-186gb
+        - 7g-278gb
+        - 7g-280gb
+        - 7g-40gb
+        - 7g-80gb
       flavors:
         - name: gpu-pool
           resources:
@@ -175,19 +393,79 @@ spec:
               nominalQuota: "0"
             - name: memory
               nominalQuota: "0Gi"
-            - name: h200-gpu
+            - name: gpu
               nominalQuota: "0"
-            - name: h200-mig-1g-18gb
+            - name: 1g-10gb
               nominalQuota: "0"
-            - name: h200-mig-1g-35gb
+            - name: 1g-18gb
               nominalQuota: "0"
-            - name: h200-mig-2g-35gb
+            - name: 1g-20gb
               nominalQuota: "0"
-            - name: h200-mig-3g-71gb
+            - name: 1g-23gb
               nominalQuota: "0"
-            - name: h200-mig-4g-71gb
+            - name: 1g-35gb
               nominalQuota: "0"
-            - name: h200-mig-7g-141gb
+            - name: 1g-45gb
+              nominalQuota: "0"
+            - name: 1g-47gb
+              nominalQuota: "0"
+            - name: 1g-5gb
+              nominalQuota: "0"
+            - name: 1g-70gb
+              nominalQuota: "0"
+            - name: 2g-10gb
+              nominalQuota: "0"
+            - name: 2g-20gb
+              nominalQuota: "0"
+            - name: 2g-35gb
+              nominalQuota: "0"
+            - name: 2g-45gb
+              nominalQuota: "0"
+            - name: 2g-47gb
+              nominalQuota: "0"
+            - name: 2g-70gb
+              nominalQuota: "0"
+            - name: 3g-139gb
+              nominalQuota: "0"
+            - name: 3g-140gb
+              nominalQuota: "0"
+            - name: 3g-20gb
+              nominalQuota: "0"
+            - name: 3g-40gb
+              nominalQuota: "0"
+            - name: 3g-71gb
+              nominalQuota: "0"
+            - name: 3g-90gb
+              nominalQuota: "0"
+            - name: 3g-93gb
+              nominalQuota: "0"
+            - name: 4g-139gb
+              nominalQuota: "0"
+            - name: 4g-140gb
+              nominalQuota: "0"
+            - name: 4g-20gb
+              nominalQuota: "0"
+            - name: 4g-40gb
+              nominalQuota: "0"
+            - name: 4g-71gb
+              nominalQuota: "0"
+            - name: 4g-90gb
+              nominalQuota: "0"
+            - name: 4g-93gb
+              nominalQuota: "0"
+            - name: 7g-141gb
+              nominalQuota: "0"
+            - name: 7g-180gb
+              nominalQuota: "0"
+            - name: 7g-186gb
+              nominalQuota: "0"
+            - name: 7g-278gb
+              nominalQuota: "0"
+            - name: 7g-280gb
+              nominalQuota: "0"
+            - name: 7g-40gb
+              nominalQuota: "0"
+            - name: 7g-80gb
               nominalQuota: "0"
 ---
 apiVersion: infrastructure.opendatahub.io/v1
@@ -205,10 +483,12 @@ metadata:
   # displayName follows the config plugin's spelling: "Unreserved <GPUProduct> GPU"
 spec:
   identifiers:
-    - displayName: Unreserved NVIDIA-H200 GPU
-      identifier: h200-gpu
+    - displayName: Unreserved GPU
+      identifier: gpu
       defaultCount: 1
-      maxCount: 12
+      # Current-world bootstrap (2026-11-26: 3 x 8 whole H100); the booking
+      # app's reservation flow owns per-reservation profiles dynamically.
+      maxCount: 24
       minCount: 1
   scheduling:
     type: Queue
