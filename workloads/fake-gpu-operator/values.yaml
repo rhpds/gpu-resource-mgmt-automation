@@ -10,60 +10,18 @@ topology:
   # run.ai/simulated-gpu-node-pool label (key configurable via nodePoolLabelKey).
   # Profiles are the built-in gpu-profile-<name> ConfigMaps shipped by the chart.
   #
-  # H200-MIRROR (Phase C): ONLY the two DRA pools — the L40S device-plugin
-  # pool (`default`) is retired: the booking flow under test is DRA-only,
-  # and the real H200 cluster has no L40S nodes. The former L40S node goes
-  # idle (labeler still stamps it `default`; no topology entry = no fake
-  # GPUs provisioned). The nvidia.com/gpu extended-resource quota is dropped
-  # from the ClusterQueues with it.
+  # DYNAMIC TOPOLOGY (Phase C, 2026-11-26): this file is INITIAL STATE ONLY —
+  # the gpu-config-plugin owns RUNTIME topology (merge semantics: it stamps
+  # its pools managedBy and never touches unmarked entries; this app ignores
+  # CM data differences). The static-era h200 pools (dra-share/dra-mig) are
+  # REMOVED — they were empty husks after the nodes moved to the plugin-built
+  # h100 pool, and the UI showed both products "Active". Build pools from the
+  # console's GPU Configuration page; the Kueue mapping matrix
+  # (hack/generate-kueue-agnostic.py, h200+h100) pre-covers both products.
   nodePools:
     # Helm map-merge keeps the chart-default `default` (L40S) pool unless a
     # null override deletes the key — retired with the device-plugin path.
     default: null
-    # DRA whole-GPU pool — real NVIDIA DRA driver on mock NVML. Label nodes
-    # into this pool to activate.
-    #
-    # H200-MIRROR (Phase C): this pool plays "h200-full" — 8 boards, MIG
-    # off, whole-GPU bookings. With consumableShares disabled (below) the
-    # devices publish WITHOUT shares capacity, so discovery derives the
-    # dedicated lane (h200-141gb-gpu) instead of a time-sliced shares lane.
-    #
-    # The h200 builtin profile ships mig.mode: disabled by default (same
-    # shape as a100), so no mode override is needed here — pool hygiene
-    # keeps whole and MIG-sliced boards separated per the H200 topology.
-    dra-share:
-      gpu:
-        backend: mock
-        profile: h200
-    # H200-MIRROR (Phase C): this pool plays "h200-mixed" — 4 boards MIG off
-    # (whole, dedicated) + 4 boards MIG on (dynamic-MIG carve surface).
-    # MIG mode is a PER-BOARD switch: the h200 builtin carries the MIG-off
-    # default with the partition table attached, so this pool flips the
-    # device_defaults mode on (boards 4-7 inherit it) and the per-device
-    # overrides below flip boards 0-3 back to MIG off. The engine's
-    # mergeMIGOverride merges per-field, so the disabled boards inherit the
-    # table while only their mode flips — exactly the mixed-node shape the
-    # real H200 cluster will run.
-    #
-    # The old declared gpu_instances are gone: under DynamicMIG the driver
-    # destroys declared out-of-band instances at startup anyway (verified
-    # 2026-11-24), so carve-at-claim owns these boards entirely.
-    # Label nodes into this pool to activate.
-    dra-mig:
-      gpu:
-        backend: mock
-        profile: h200
-        overrides:
-          device_defaults:
-            mig:
-              mode_current: enabled
-              mode_pending: enabled
-          # Dynamic MIG Booking (see ~/.opencode/plans/dynamic-mig-booking.md):
-          # ALL 8 flex boards expose the MIG surface — no per-device MIG-off
-          # overrides. The pool boundary is the carve cap (8): the dedicated
-          # pool declares no MIG surface at all. A flex board serves whole
-          # (parent consumes the board's full CounterSet) or partitions,
-          # never both.
   nodePoolLabelKey: run.ai/simulated-gpu-node-pool
   migStrategy: none
 
