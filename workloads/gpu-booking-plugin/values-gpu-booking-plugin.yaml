@@ -50,8 +50,15 @@ image:
   #   empty charges with no error, every workload silently skipped, the
   #   check stuck at Kueue's own Pending init. Fixed + regression test on
   #   the real double-nested shape.
+  # - a3f95a88 (W4b completion): the admission-race discriminator — an
+  #   admitted+uncovered workload that STAYS admitted after the gating
+  #   message was patched (Kueue had no transition to evict on) is
+  #   deactivated once; quota + claim release, the sync clears the stale
+  #   consumed rows, the Deployment's replacement gates like any fresh
+  #   workload. Frontend: coveredUsage now drives per-slot colors — a
+  #   reserved slot an admitted workload runs on renders consumed-green.
   #   Bump the digest when re-building.
-  tag: sha256:bc3d2b5e5aa7519772eb12431e92184e0819db39e023eff313287cd74158b354
+  tag: sha256:a3f95a880b77a9d117d6a83a6027c1a0af64d29319645bee186292c0ab9fb0ba
 
 gpuDiscovery:
   enabled: true
