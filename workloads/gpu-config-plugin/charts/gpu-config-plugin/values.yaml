@@ -28,7 +28,12 @@ image:
   #   the status-updater pruned its mock DS). Convergent ownership: chart
   #   heals the baseline, the plugin heals its marker pools, status-updater
   #   rebuilds the mock chain from the restored CM (event-driven).
-  tag: sha256:69ec4bec9f11f1328d0b2e5c79a8123499a2c2abfc13677e3bd07113cae05700
+  # - e7307f7b: UX fixes from Mike's live validation — Pool Nodes checkboxes
+  #   de-select properly (a live-pool fallback in isChecked re-checked
+  #   dropped nodes from the node's pool label; the state worked, the
+  #   display lied), and the profile Active badge keys on pools SERVING
+  #   NODES (empty husks no longer light a product's card).
+  tag: sha256:e7307f7bcf50643dc3a0bc4105e27794333b89241b09b3a8a510e9ab5a63eac9
   pullPolicy: Always
 
 plugin:
