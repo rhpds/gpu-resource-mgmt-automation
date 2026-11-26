@@ -5,15 +5,22 @@ image:
   repository: quay.io/eformat/gpu-config-plugin
   # :rhoai-36-dra isolates this workstream from :latest consumers
   # (prelude2 and other environments pull :latest — do not reuse that tag).
-  # Digest-pinned: Phase C DRA awareness (2026-11-26) — v2 multi-pool deploy
-  # (merge topology: managedBy marker, explicit deletes only, legacy pools
-  # converted on merge), pool backends mock|fake, MIG capability declaration
-  # (mode + per-device MIG-off overrides + read-only mig-profiles-<id> carve
-  # surface), DRA status (ResourceSlices/DeviceClasses/claims), live pool
-  # inventory. Kueue provisioning kept for legacy single-pool requests,
-  # dropped for v2 (GitOps + booking app own those objects). Chart RBAC:
-  # +resource.k8s.io resourceslices/deviceclasses/resourceclaims (get/list).
-  tag: sha256:79f0204ab26bd619075a700fc38fba946cd4007a58da7caac79dc7f6f62c664c
+  # Digest-pinned lineage:
+  # - 79f0204a: Phase C DRA awareness (2026-11-26) — v2 multi-pool deploy
+  #   (merge topology: managedBy marker, explicit deletes only, legacy pools
+  #   converted on merge), pool backends mock|fake, MIG capability
+  #   declaration (mode + per-device MIG-off overrides + read-only
+  #   mig-profiles-<id> carve surface), DRA status
+  #   (ResourceSlices/DeviceClasses/claims), live pool inventory. Kueue
+  #   provisioning kept for legacy single-pool requests, dropped for v2
+  #   (GitOps + booking app own those objects). Chart RBAC: +resource.k8s.io
+  #   resourceslices/deviceclasses/resourceclaims (get/list).
+  # - 4df7742a: UX fix from Mike's live test — NodePicker enables one-deploy
+  #   node moves (checked node serving another pool = "moves from X",
+  #   DeployModal warning as the confirm gate; unlocks stale-label nodes
+  #   like the retired L40S `default`), and the MIG board grid retitled
+  #   (checked = MIG-capable; the old title said the opposite).
+  tag: sha256:4df7742a76c6bcab99fa219188b903175b42f8d009f6cbac72f7342fdc3a9f69
   pullPolicy: Always
 
 plugin:
