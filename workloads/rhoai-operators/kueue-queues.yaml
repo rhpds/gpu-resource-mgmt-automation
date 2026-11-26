@@ -53,38 +53,14 @@ spec:
         - 1g-10gb
         - 1g-18gb
         - 1g-20gb
-        - 1g-23gb
         - 1g-35gb
-        - 1g-45gb
-        - 1g-47gb
-        - 1g-5gb
-        - 1g-70gb
-        - 2g-10gb
         - 2g-20gb
         - 2g-35gb
-        - 2g-45gb
-        - 2g-47gb
-        - 2g-70gb
-        - 3g-139gb
-        - 3g-140gb
-        - 3g-20gb
         - 3g-40gb
         - 3g-71gb
-        - 3g-90gb
-        - 3g-93gb
-        - 4g-139gb
-        - 4g-140gb
-        - 4g-20gb
         - 4g-40gb
         - 4g-71gb
-        - 4g-90gb
-        - 4g-93gb
         - 7g-141gb
-        - 7g-180gb
-        - 7g-186gb
-        - 7g-278gb
-        - 7g-280gb
-        - 7g-40gb
         - 7g-80gb
       flavors:
         - name: gpu-pool
@@ -114,69 +90,21 @@ spec:
               nominalQuota: "0"
             - name: 1g-20gb
               nominalQuota: "0"
-            - name: 1g-23gb
-              nominalQuota: "0"
             - name: 1g-35gb
-              nominalQuota: "0"
-            - name: 1g-45gb
-              nominalQuota: "0"
-            - name: 1g-47gb
-              nominalQuota: "0"
-            - name: 1g-5gb
-              nominalQuota: "0"
-            - name: 1g-70gb
-              nominalQuota: "0"
-            - name: 2g-10gb
               nominalQuota: "0"
             - name: 2g-20gb
               nominalQuota: "0"
             - name: 2g-35gb
               nominalQuota: "0"
-            - name: 2g-45gb
-              nominalQuota: "0"
-            - name: 2g-47gb
-              nominalQuota: "0"
-            - name: 2g-70gb
-              nominalQuota: "0"
-            - name: 3g-139gb
-              nominalQuota: "0"
-            - name: 3g-140gb
-              nominalQuota: "0"
-            - name: 3g-20gb
-              nominalQuota: "0"
             - name: 3g-40gb
               nominalQuota: "0"
             - name: 3g-71gb
-              nominalQuota: "0"
-            - name: 3g-90gb
-              nominalQuota: "0"
-            - name: 3g-93gb
-              nominalQuota: "0"
-            - name: 4g-139gb
-              nominalQuota: "0"
-            - name: 4g-140gb
-              nominalQuota: "0"
-            - name: 4g-20gb
               nominalQuota: "0"
             - name: 4g-40gb
               nominalQuota: "0"
             - name: 4g-71gb
               nominalQuota: "0"
-            - name: 4g-90gb
-              nominalQuota: "0"
-            - name: 4g-93gb
-              nominalQuota: "0"
             - name: 7g-141gb
-              nominalQuota: "0"
-            - name: 7g-180gb
-              nominalQuota: "0"
-            - name: 7g-186gb
-              nominalQuota: "0"
-            - name: 7g-278gb
-              nominalQuota: "0"
-            - name: 7g-280gb
-              nominalQuota: "0"
-            - name: 7g-40gb
               nominalQuota: "0"
             - name: 7g-80gb
               nominalQuota: "0"
@@ -211,38 +139,14 @@ spec:
         - 1g-10gb
         - 1g-18gb
         - 1g-20gb
-        - 1g-23gb
         - 1g-35gb
-        - 1g-45gb
-        - 1g-47gb
-        - 1g-5gb
-        - 1g-70gb
-        - 2g-10gb
         - 2g-20gb
         - 2g-35gb
-        - 2g-45gb
-        - 2g-47gb
-        - 2g-70gb
-        - 3g-139gb
-        - 3g-140gb
-        - 3g-20gb
         - 3g-40gb
         - 3g-71gb
-        - 3g-90gb
-        - 3g-93gb
-        - 4g-139gb
-        - 4g-140gb
-        - 4g-20gb
         - 4g-40gb
         - 4g-71gb
-        - 4g-90gb
-        - 4g-93gb
         - 7g-141gb
-        - 7g-180gb
-        - 7g-186gb
-        - 7g-278gb
-        - 7g-280gb
-        - 7g-40gb
         - 7g-80gb
       flavors:
         - name: gpu-pool
@@ -259,69 +163,21 @@ spec:
               nominalQuota: "0"
             - name: 1g-20gb
               nominalQuota: "0"
-            - name: 1g-23gb
-              nominalQuota: "0"
             - name: 1g-35gb
-              nominalQuota: "0"
-            - name: 1g-45gb
-              nominalQuota: "0"
-            - name: 1g-47gb
-              nominalQuota: "0"
-            - name: 1g-5gb
-              nominalQuota: "0"
-            - name: 1g-70gb
-              nominalQuota: "0"
-            - name: 2g-10gb
               nominalQuota: "0"
             - name: 2g-20gb
               nominalQuota: "0"
             - name: 2g-35gb
               nominalQuota: "0"
-            - name: 2g-45gb
-              nominalQuota: "0"
-            - name: 2g-47gb
-              nominalQuota: "0"
-            - name: 2g-70gb
-              nominalQuota: "0"
-            - name: 3g-139gb
-              nominalQuota: "0"
-            - name: 3g-140gb
-              nominalQuota: "0"
-            - name: 3g-20gb
-              nominalQuota: "0"
             - name: 3g-40gb
               nominalQuota: "0"
             - name: 3g-71gb
-              nominalQuota: "0"
-            - name: 3g-90gb
-              nominalQuota: "0"
-            - name: 3g-93gb
-              nominalQuota: "0"
-            - name: 4g-139gb
-              nominalQuota: "0"
-            - name: 4g-140gb
-              nominalQuota: "0"
-            - name: 4g-20gb
               nominalQuota: "0"
             - name: 4g-40gb
               nominalQuota: "0"
             - name: 4g-71gb
               nominalQuota: "0"
-            - name: 4g-90gb
-              nominalQuota: "0"
-            - name: 4g-93gb
-              nominalQuota: "0"
             - name: 7g-141gb
-              nominalQuota: "0"
-            - name: 7g-180gb
-              nominalQuota: "0"
-            - name: 7g-186gb
-              nominalQuota: "0"
-            - name: 7g-278gb
-              nominalQuota: "0"
-            - name: 7g-280gb
-              nominalQuota: "0"
-            - name: 7g-40gb
               nominalQuota: "0"
             - name: 7g-80gb
               nominalQuota: "0"
@@ -353,38 +209,14 @@ spec:
         - 1g-10gb
         - 1g-18gb
         - 1g-20gb
-        - 1g-23gb
         - 1g-35gb
-        - 1g-45gb
-        - 1g-47gb
-        - 1g-5gb
-        - 1g-70gb
-        - 2g-10gb
         - 2g-20gb
         - 2g-35gb
-        - 2g-45gb
-        - 2g-47gb
-        - 2g-70gb
-        - 3g-139gb
-        - 3g-140gb
-        - 3g-20gb
         - 3g-40gb
         - 3g-71gb
-        - 3g-90gb
-        - 3g-93gb
-        - 4g-139gb
-        - 4g-140gb
-        - 4g-20gb
         - 4g-40gb
         - 4g-71gb
-        - 4g-90gb
-        - 4g-93gb
         - 7g-141gb
-        - 7g-180gb
-        - 7g-186gb
-        - 7g-278gb
-        - 7g-280gb
-        - 7g-40gb
         - 7g-80gb
       flavors:
         - name: gpu-pool
@@ -401,69 +233,21 @@ spec:
               nominalQuota: "0"
             - name: 1g-20gb
               nominalQuota: "0"
-            - name: 1g-23gb
-              nominalQuota: "0"
             - name: 1g-35gb
-              nominalQuota: "0"
-            - name: 1g-45gb
-              nominalQuota: "0"
-            - name: 1g-47gb
-              nominalQuota: "0"
-            - name: 1g-5gb
-              nominalQuota: "0"
-            - name: 1g-70gb
-              nominalQuota: "0"
-            - name: 2g-10gb
               nominalQuota: "0"
             - name: 2g-20gb
               nominalQuota: "0"
             - name: 2g-35gb
               nominalQuota: "0"
-            - name: 2g-45gb
-              nominalQuota: "0"
-            - name: 2g-47gb
-              nominalQuota: "0"
-            - name: 2g-70gb
-              nominalQuota: "0"
-            - name: 3g-139gb
-              nominalQuota: "0"
-            - name: 3g-140gb
-              nominalQuota: "0"
-            - name: 3g-20gb
-              nominalQuota: "0"
             - name: 3g-40gb
               nominalQuota: "0"
             - name: 3g-71gb
-              nominalQuota: "0"
-            - name: 3g-90gb
-              nominalQuota: "0"
-            - name: 3g-93gb
-              nominalQuota: "0"
-            - name: 4g-139gb
-              nominalQuota: "0"
-            - name: 4g-140gb
-              nominalQuota: "0"
-            - name: 4g-20gb
               nominalQuota: "0"
             - name: 4g-40gb
               nominalQuota: "0"
             - name: 4g-71gb
               nominalQuota: "0"
-            - name: 4g-90gb
-              nominalQuota: "0"
-            - name: 4g-93gb
-              nominalQuota: "0"
             - name: 7g-141gb
-              nominalQuota: "0"
-            - name: 7g-180gb
-              nominalQuota: "0"
-            - name: 7g-186gb
-              nominalQuota: "0"
-            - name: 7g-278gb
-              nominalQuota: "0"
-            - name: 7g-280gb
-              nominalQuota: "0"
-            - name: 7g-40gb
               nominalQuota: "0"
             - name: 7g-80gb
               nominalQuota: "0"

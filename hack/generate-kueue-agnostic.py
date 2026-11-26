@@ -46,9 +46,15 @@ def sanitize(name: str) -> str:
 VARIANT_RE = re.compile(r"(\+me|-me)(\.all|-all)?$")
 
 
-def load_catalog(source: str):
+def load_catalog(source: str, products_filter=None):
     """Read every MIG table from the profile tree: profile name -> sorted
-    set of products that ship it. Media-extension variants are filtered."""
+    set of products that ship it. Media-extension variants are filtered.
+    products_filter limits the matrix to the named products — the RH Kueue
+    operator's Kueue CR caps deviceClassMappings at 16 entries (live
+    finding 2026-11-26: the 37-entry full-catalog matrix was rejected by
+    the CR's OpenAPI validation), so the matrix covers the demo products
+    (default h200+h100, the swap pair) and is regenerated when the set
+    changes (one GitOps commit + the documented operand restart)."""
     mig_dir = os.path.join(source, "mig")
     if not os.path.isdir(mig_dir):
         sys.exit(f"error: no mig/ dir under {source} (pass SYNC_LOCAL_DIR)")
@@ -57,6 +63,8 @@ def load_catalog(source: str):
     skipped = set()
     for path in sorted(glob.glob(os.path.join(mig_dir, "*.yaml"))):
         product = os.path.basename(path)[: -len(".yaml")]
+        if products_filter and product not in products_filter:
+            continue
         products.append(product)
         doc = yaml.safe_load(open(path))
         for sp in (doc.get("supported_profiles") or []) if isinstance(doc, dict) else []:
@@ -115,9 +123,21 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[1])
     ap.add_argument("--outdir", help="write fragments as files instead of stdout")
     ap.add_argument("--source", default=os.environ.get("SYNC_LOCAL_DIR", DEFAULT_SOURCE))
+    ap.add_argument(
+        "--products",
+        default=os.environ.get("KUEUE_MATRIX_PRODUCTS", "h200,h100"),
+        help="comma-separated products to cover (default h200,h100 — the demo "
+        "swap pair; the Kueue CR caps deviceClassMappings at 16 entries)",
+    )
     args = ap.parse_args()
+    products_filter = {p.strip() for p in args.products.split(",") if p.strip()}
 
-    products, lanes, skipped = load_catalog(args.source)
+    products, lanes, skipped = load_catalog(args.source, products_filter)
+    if len(lanes) + 1 > 16:
+        sys.exit(
+            f"error: {len(lanes) + 1} mapping entries exceed the Kueue CR's "
+            "16-item deviceClassMappings cap — trim --products"
+        )
     blocks = {
         "kueue-cr.deviceClassMappings.yaml": mapping_block(lanes),
         "kueue-queues.lanes.yaml": lane_block(lanes),
