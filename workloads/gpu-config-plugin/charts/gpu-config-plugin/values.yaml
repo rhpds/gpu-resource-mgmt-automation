@@ -33,7 +33,12 @@ image:
   #   dropped nodes from the node's pool label; the state worked, the
   #   display lied), and the profile Active badge keys on pools SERVING
   #   NODES (empty husks no longer light a product's card).
-  tag: sha256:e7307f7bcf50643dc3a0bc4105e27794333b89241b09b3a8a510e9ab5a63eac9
+  # - 8c8e510e: restartWorkloads also rolls dra-driver-nvidia-gpu-kubelet-plugin
+  #   (NotFound-tolerated) — after a pool profile change the driver keeps
+  #   serving the STALE enumeration until rolled (live finding 2026-11-26:
+  #   the h100→h200 swap left every ResourceSlice publishing H100 until the
+  #   DS was restarted by hand). Product swaps now re-enumerate automatically.
+  tag: sha256:8c8e510e8b2ae88d7ba1f9820aab8acff23b059768917963dc56096873d2efd7
   pullPolicy: Always
 
 plugin:
