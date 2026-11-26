@@ -95,6 +95,16 @@ metadata:
 spec:
   cohortName: unreserved
   namespaceSelector: {}
+  # W4b booker enforcement (dynamic-mig-booking.md): workloads in this CQ
+  # must pass the booking plugin's "booker" AdmissionCheck — charges covered
+  # by an active booking, or within free lane capacity (catalog − bookings −
+  # other unreserved charges, per-node max per pod) — before Kueue admits
+  # them. The strategy form is load-bearing: this operand silently drops the
+  # plain spec.admissionChecks list. The plugin's enforcer self-heals this
+  # wiring every pass (ensureUnreservedCQCheck) if it is ever lost.
+  admissionChecksStrategy:
+    admissionChecks:
+      - name: booker
   resourceGroups:
     - coveredResources:
         - cpu

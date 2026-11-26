@@ -60,8 +60,21 @@ image:
   # - 29d1d6d0: reserved slots render RED always (covered-while-running is
   #   carried by the counts/tooltip, not a color flip — Mike: "reserved
   #   workloads should just stay Red").
-  #   Bump the digest when re-building.
-  tag: sha256:29d1d6d0e0242208d9fb0f9bd53ed5c21eddc0d0d6201e840dbfd2915e298cc6
+  # - 8bd1180d (W4-B): the booker extended to the UNRESERVED lane — unified
+  #   FIFO policy: booking coverage wins on either lane (bookings are
+  #   lane-agnostic budgets), unreserved charges must fit catalog − Σ
+  #   active bookings − Σ other unreserved charges, and a single pod's
+  #   charge is capped at the per-node device max from ResourceSlices
+  #   (DRA is node-local; >8-per-pod gates with a replicas hint). Gated
+  #   workloads consume no budget → backfill. Make-room = same flip: new
+  #   bookings shrink the free budget, over-budget holders evict. CQ wiring
+  #   now uses admissionChecksStrategy (this operand silently drops the
+  #   plain spec.admissionChecks list — a CQ rebuild would have lost
+  #   enforcement); the enforcer also self-heals the wiring on the static
+  #   CQ unreserved (wired in rhoai-operators/kueue-queues.yaml too — sync
+  #   BOTH apps). Zero-charge workloads pass the check (CPU workloads in
+  #   wired CQs would hang otherwise). Bump the digest when re-building.
+  tag: sha256:8bd1180d727531d158da32e316465572c54b68853dd51ca3007b74b3f8c71926
 
 gpuDiscovery:
   enabled: true
