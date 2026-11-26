@@ -57,8 +57,11 @@ image:
   #   consumed rows, the Deployment's replacement gates like any fresh
   #   workload. Frontend: coveredUsage now drives per-slot colors — a
   #   reserved slot an admitted workload runs on renders consumed-green.
+  # - 29d1d6d0: reserved slots render RED always (covered-while-running is
+  #   carried by the counts/tooltip, not a color flip — Mike: "reserved
+  #   workloads should just stay Red").
   #   Bump the digest when re-building.
-  tag: sha256:a3f95a880b77a9d117d6a83a6027c1a0af64d29319645bee186292c0ab9fb0ba
+  tag: sha256:29d1d6d0e0242208d9fb0f9bd53ed5c21eddc0d0d6201e840dbfd2915e298cc6
 
 gpuDiscovery:
   enabled: true
