@@ -73,8 +73,17 @@ image:
   #   enforcement); the enforcer also self-heals the wiring on the static
   #   CQ unreserved (wired in rhoai-operators/kueue-queues.yaml too — sync
   #   BOTH apps). Zero-charge workloads pass the check (CPU workloads in
-  #   wired CQs would hang otherwise). Bump the digest when re-building.
-  tag: sha256:8bd1180d727531d158da32e316465572c54b68853dd51ca3007b74b3f8c71926
+  #   wired CQs would hang otherwise).
+  # - 4fc950ac (W4-B board model): the unreserved gate now packs booked +
+  #   granted + candidate charges through database.BoardCapacityCheck (the
+  #   dedicated-8 + flex-64-slice physical model) before granting — the flat
+  #   per-lane budget was blind to cross-lane board holds (a 7g-141gb carve
+  #   consumes a flex board from the whole lane's pool) and admitted a second
+  #   8-board pod that could never allocate (live finding: 2x8 pods + carve,
+  #   15 allocatable boards, 16 counted). "board pool exhausted: …" message
+  #   family added to the deactivation discriminator. Regression:
+  #   TestAssignBookerStatesBoardModel. Bump the digest when re-building.
+  tag: sha256:4fc950acc1f8d25aab770a66413c0365a0f3b9d482df0cc6061cbe2c224ac370
 
 gpuDiscovery:
   enabled: true
