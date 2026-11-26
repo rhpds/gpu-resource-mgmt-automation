@@ -3,7 +3,17 @@ replicaCount: 1
 
 image:
   repository: quay.io/eformat/gpu-config-plugin
-  tag: latest
+  # :rhoai-36-dra isolates this workstream from :latest consumers
+  # (prelude2 and other environments pull :latest — do not reuse that tag).
+  # Digest-pinned: Phase C DRA awareness (2026-11-26) — v2 multi-pool deploy
+  # (merge topology: managedBy marker, explicit deletes only, legacy pools
+  # converted on merge), pool backends mock|fake, MIG capability declaration
+  # (mode + per-device MIG-off overrides + read-only mig-profiles-<id> carve
+  # surface), DRA status (ResourceSlices/DeviceClasses/claims), live pool
+  # inventory. Kueue provisioning kept for legacy single-pool requests,
+  # dropped for v2 (GitOps + booking app own those objects). Chart RBAC:
+  # +resource.k8s.io resourceslices/deviceclasses/resourceclaims (get/list).
+  tag: sha256:79f0204ab26bd619075a700fc38fba946cd4007a58da7caac79dc7f6f62c664c
   pullPolicy: Always
 
 plugin:

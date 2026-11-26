@@ -9,5 +9,11 @@ resources:
 # Deploy flow clobbers the chart-owned topology CM (single-pool old-schema
 # replace vs the 3-pool staged topology) and it has no DRA awareness.
 # Its Kueue wiring (ResourceFlavor/Cohort/CQs/HardwareProfile) is replaced
-# by workloads/rhoai-operators/kueue-queues.yaml. Uncomment when Phase C lands.
-# - gpu-config-plugin-app.yaml
+# by workloads/rhoai-operators/kueue-queues.yaml.
+# Phase C un-held (2026-11-26): the plugin is DRA-aware now — multi-pool
+# topology with merge semantics (managedBy marker: it only ever touches
+# pools it wrote; chart/GitOps pools are passed through), so it no longer
+# clobbers the topology CM this app renders. Belt-and-braces:
+# fake-gpu-operator-app.yaml ignores differences on the CM data, letting
+# the plugin own runtime topology while chart values remain initial state.
+- gpu-config-plugin-app.yaml

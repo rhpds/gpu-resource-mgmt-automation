@@ -15,6 +15,19 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: gpu-operator
+  # Phase C (2026-11-26): the gpu-config-plugin owns RUNTIME topology — it
+  # merge-writes the topology CM (managedBy marker per pool; chart/GitOps
+  # pools untouched). Ignore CM data differences so selfHeal doesn't fight
+  # the plugin; chart values remain the initial state. The plugin's merges
+  # preserve unmanaged pools, so ArgoCD re-syncs of chart pool changes still
+  # apply (the plugin's next deploy merges on top of them).
+  ignoreDifferences:
+  - group: ""
+    kind: ConfigMap
+    name: topology
+    namespace: gpu-operator
+    jsonPointers:
+    - /data
   syncPolicy:
     automated:
       prune: true
