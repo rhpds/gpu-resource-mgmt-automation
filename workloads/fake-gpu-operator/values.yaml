@@ -211,14 +211,16 @@ dra-driver-nvidia-gpu:
           - name: ALT_PROC_DEVICES_PATH
             value: /driver-root/proc/devices
     # This REPLACES the subchart's default affinity (pci-10de) — the pool
-    # label is the more precise selector here.
+    # label is the more precise selector here. Operator Exists (NOT a pool
+    # list): pool names are RUNTIME topology owned by the gpu-config-plugin
+    # (Phase C) — a hardcoded list orphans the driver the moment a pool is
+    # renamed/added (live finding 2026-11-26: nodes moved to h100, driver
+    # scheduled nowhere, every ResourceSlice stayed stale-H200). The driver
+    # belongs on every simulated-GPU node, whatever its pool is called.
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
             - matchExpressions:
                 - key: run.ai/simulated-gpu-node-pool
-                  operator: In
-                  values:
-                    - dra-share
-                    - dra-mig
+                  operator: Exists
