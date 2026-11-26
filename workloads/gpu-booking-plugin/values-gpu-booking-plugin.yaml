@@ -45,8 +45,13 @@ image:
   #   under-count), and state patches compare messages too (the patch is
   #   what forces Kueue to evict stale admitted workloads). Also needs the
   #   chart RBAC: get on resourceclaimtemplates + workloads/status.
+  # - bc3d2b5e (W4b fix): the RCT charge parser read spec.devices but a
+  #   ResourceClaimTemplate nests the claim spec at spec.spec.devices —
+  #   empty charges with no error, every workload silently skipped, the
+  #   check stuck at Kueue's own Pending init. Fixed + regression test on
+  #   the real double-nested shape.
   #   Bump the digest when re-building.
-  tag: sha256:755a538a7ee129e86743d58e071a40c1f55b33d06faf2e99545a295491b2394b
+  tag: sha256:bc3d2b5e5aa7519772eb12431e92184e0819db39e023eff313287cd74158b354
 
 gpuDiscovery:
   enabled: true
