@@ -82,8 +82,18 @@ image:
   #   8-board pod that could never allocate (live finding: 2x8 pods + carve,
   #   15 allocatable boards, 16 counted). "board pool exhausted: …" message
   #   family added to the deactivation discriminator. Regression:
-  #   TestAssignBookerStatesBoardModel. Bump the digest when re-building.
-  tag: sha256:4fc950acc1f8d25aab770a66413c0365a0f3b9d482df0cc6061cbe2c224ac370
+  # - 455c5caa (W4-B reactivation sweep): deposed workloads are "benched,
+  #   not dead" — each pass the enforcer re-evaluates them against the
+  #   current grants (FIFO; coverage for the reserved lane, shape+board+
+  #   budget for unreserved) and reactivates those that would be granted
+  #   now (spec.active=true). The parked gated pod runs when the check goes
+  #   Ready. Needed because the operand's DRA admission race deterministically
+  #   deposes replacements when quota fits (init lag), which would otherwise
+  #   break auto-recovery after make-room eviction. Live-proven sequence:
+  #   carve booking evicted the younger 8-board pod (FIFO kept the older),
+  #   replacement race-deposed; cancel the booking → reactivated → runs.
+  #   Regression: TestReactivationTargets. Bump the digest when re-building.
+  tag: sha256:455c5caadcee5c7ecb2768d1ffdc1a8cec6f61fcca2635fcd09351fed83d89dd
 
 gpuDiscovery:
   enabled: true
